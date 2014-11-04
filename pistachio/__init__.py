@@ -29,8 +29,15 @@ def load_config(settings):
   conn = connect(settings)
   bucket = conn.get_bucket(settings['bucket'])
 
-  # Create an empty config
-  config = {}
+  # Initialize the config with the AWS keys
+  config = {
+    'aws': {
+      'pistachio': {
+        'key': conn.access_key,
+        'secret': conn.secret_key,
+      }
+    }
+  }
   # Iterate through yaml files in the set folder
   for key in bucket.list(settings['folder']):
     if key.name.endswith('.yaml'):
