@@ -25,7 +25,7 @@ def load_settings():
     if os.path.isfile(settings_file):
       loaded = yaml.load(open(settings_file,'r'))
       # Expand the fullpath of the cache, if set
-      if loaded['cache']: loaded['cache'] = os.path.abspath(os.path.join(path, loaded['cache']))
+      if 'cache' in loaded: loaded['cache'] = os.path.abspath(os.path.join(path, loaded['cache']))
       return loaded
     if path == '/': raise Exception('No pistachio.yaml file found')
     path = os.path.abspath(os.path.join(path, os.pardir))
@@ -37,7 +37,12 @@ def validate_settings(settings):
     if required_key not in settings: raise Exception('The "%s" key is required.' % required_key)
 
   # Default settings
-  if 'folder' not in settings: settings['folder'] = ''
+  if 'path' not in settings: settings['path'] = ['']
+  if 'cache' not in settings: settings['cache'] = None
+
+  # Type conversions
+  if not isinstance(settings['path'], list):
+    settings['path'] = [settings['path']]
 
   return settings
 
@@ -60,13 +65,15 @@ def load_config(settings):
       'secret': conn.secret_key,
     }
   }
-  # Iterate through yaml files in the set folder
-  for key in bucket.list(settings['folder']):
-    if key.name.endswith('.yaml'):
-      contents = key.get_contents_as_string()
-      config_partial = yaml.load(contents)
-      # Update the config with the config partial
-      config.update(config_partial)
+  # For each folder
+  for folder in reversed(settings['path']):
+    # Iterate through yaml files in the set folder
+    for key in bucket.list(folder):
+      if key.name.endswith('.yaml'):
+        contents = key.get_contents_as_string()
+        config_partial = yaml.load(contents)
+        # Update the config with the config partial
+        config.update(config_partial)
 
   # If settings['cache'] is set, we should cache the config locally to a file
   if settings['cache']:
