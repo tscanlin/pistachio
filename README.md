@@ -26,6 +26,11 @@ path: STRING/ARRAY (OPTIONAL)
 # When an array, folders listed first have higher precedence.  
 # When unset, looks in the root of the bucket.
 ```
+```
+cache: STRING (OPTIONAL)
+# Path, relative to the pistachio.yaml file, to save/load cache from
+# When unset, does not attempt to load from cache, or save from cache.
+```
 
 \* If the `pistachio.yaml` file does not contain a key and secret, it will check check the following evironment variables for them, respectively: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 
