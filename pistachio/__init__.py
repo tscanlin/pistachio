@@ -49,7 +49,10 @@ def load_settings():
 
   # Override settings from any environment variables
   for var, val in os.environ.iteritems():
-    if var.startswith('PISTACHIO_'):
+    if var == 'PISTACHIO_PATH':
+      # When path is set through environment variables, folders are ':' delimited
+      settings['path'] = val.split(':')
+    elif var.startswith('PISTACHIO_'):
       key = var.split('PISTACHIO_', 1)[1]
       settings[key.lower()] = val
 
