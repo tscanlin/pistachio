@@ -3,6 +3,18 @@ import os
 import yaml
 
 
+# Recursively update a dict
+# Merges d2 into d1
+# Any conflicts override d1
+def merge_dicts(d1, d2):
+  for key in d2:
+    if key in d1 and isinstance(d1[key], dict) and isinstance(d2[key], dict):
+      merge_dicts(d1[key], d2[key])
+    else:
+      d1[key] = d2[key]
+  return d1
+
+
 # Create an S3 connection
 def connect(settings):
   key = settings['key']
@@ -88,7 +100,7 @@ def load_config(settings):
           contents = key.get_contents_as_string()
           # Update the config with the config partial
           config_partial = yaml.load(contents)
-          config.update(config_partial)
+          merge_dicts(config, config_partial)
         except boto.exception.S3ResponseError:
           pass # Access denied. Skip this one.
 
