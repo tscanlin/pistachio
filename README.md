@@ -16,6 +16,7 @@ Put another `pistachio.yaml` file in your home directory with the following cont
 key: YOURAWSKEY
 secret: YOURAWSKEYSECRET
 ```
+Add `pistachio.cache` to your `.gitignore`, so you don't track cache files.
 
 ## Accessing the loaded config
 ```
