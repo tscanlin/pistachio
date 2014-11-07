@@ -62,8 +62,11 @@ def load_settings():
 # Validate settings and set defaults
 def validate_settings(settings):
   # Required keys
-  for required_key in ['key', 'secret', 'bucket']:
-    if required_key not in settings: raise Exception('The "%s" key is required.' % required_key)
+  if 'cache' in settings and settings['cache'] and os.path.isfile(settings['cache']):
+    pass # Only 'cache' key is required, if the cache already exists.
+  else:
+    for required_key in ['key', 'secret', 'bucket']:
+      if required_key not in settings: raise Exception('The "%s" key is required.' % required_key)
 
   # Default settings
   if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
