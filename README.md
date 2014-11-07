@@ -2,7 +2,9 @@ S3 stored Credential loader module.
 ================
 Copyright Optimizely, Inc., All Rights Reserved.
 
-The `pistachio` module exists to load credentials stored on S3.
+The `pistachio` module exists to load credentials stored on S3.  
+This package understands nothing about how your S3 security is managed.  
+This package assumes it has access to the S3 bucket/folder(s) you set it to use.
 
 ## Quickstart
 Put a `pistachio.yaml` file in your project repo with the following content:
