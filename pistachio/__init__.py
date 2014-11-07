@@ -79,8 +79,8 @@ def validate_settings(settings):
   return settings
 
 
-# Load the config from S3
-def load_config(settings):
+# Load and merge the yaml files from S3
+def load(settings=load_settings()):
   settings = validate_settings(settings)
 
   # Load the file from a cache if one exists
@@ -116,7 +116,3 @@ def load_config(settings):
       pistachio_cache.write( yaml.dump(config, default_flow_style=False))
 
   return config
-
-
-# Set the CONFIG constant
-CONFIG = load_config(load_settings())
