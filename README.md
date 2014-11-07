@@ -63,8 +63,8 @@ cache: STRING
 #### Example pistachio.yaml files
 ```
 # Example where Key/Secret is loaded into environment variables
-# export AWS_ACCESS_KEY_ID=K4JD1H
-# export AWS_SECRET_ACCESS_KEY=HF82E3DF234X
+# export PISTACHIO_KEY=K4JD1H
+# export PISTACHIO_SECRET=HF82E3DF234X
 
 # pistachio.yaml
 bucket: optimizely-pistachio-dev
