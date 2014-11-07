@@ -23,7 +23,8 @@ def load():
   for settings_file in reversed(settings_files):
     loaded = yaml.load(open(settings_file,'r'))
     # Expand the fullpath of the cache, if set
-    if 'cache' in loaded: loaded['cache'] = os.path.abspath(os.path.join(os.path.dirname(settings_file), loaded['cache']))
+    if 'cache' in loaded:
+      loaded['cache'] = os.path.abspath(os.path.join(os.path.dirname(settings_file), loaded['cache']))
     settings.update(loaded)
 
   # Override settings from any environment variables
