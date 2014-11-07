@@ -17,24 +17,21 @@ key: YOURAWSKEY
 secret: YOURAWSKEYSECRET
 ```
 
-## Accessing CONFIG
-One only needs to import this module to load the configs.
-
+## Accessing the loaded config
 ```
 import pistachio
-value = pistachio.CONFIG['some_key']
+config = pistachio.load()
+value = config['some_key']
 ```
 
 #### Under the Hood
-When you run `import pistachio` it:  
+When you run `pistachio.load()` it:  
 - Checks if you have a 'cache' setting
   - If so, attepmpts to load from the cache file, if it exists
 - Otherwise, loads the config by merging yaml files from specified bucket/folders
   - This can be slow, as it has to download each file from S3 over the network
 - If 'cache' is set, saves the cache
 - Saves the loaded config to `pistachio.CONFIG`
-
-Calling `pistachio.CONFIG` is quick after the intial import, as it's just a hash constant
 
 ## Settings
 This is loaded from files named `pistachio.yaml`.  
