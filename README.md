@@ -70,7 +70,7 @@ path: STRING/ARRAY
 # Folder(s) within the bucket to load from.
 # Can be string or array.  
 # When an array, folders listed first have higher precedence.
-# When using setting through ENV variables, folders are ':' delimited. E.g. `PISTACHIO_PATH=prod:dev`
+# When setting through ENV variable, folders are ':' delimited. E.g. `PISTACHIO_PATH=prod:dev`
 # When unset, looks in the root of the bucket.
 ```
 ```
