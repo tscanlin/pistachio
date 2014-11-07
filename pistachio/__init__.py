@@ -43,6 +43,7 @@ def load_settings():
 
   return settings
 
+
 # Validate settings and set defaults
 def validate_settings(settings):
   # Required keys
