@@ -30,6 +30,7 @@ def load_settings():
     if path == '/': raise Exception('No pistachio.yaml file found')
     path = os.path.abspath(os.path.join(path, os.pardir))
 
+
 # Validate settings and set defaults
 def validate_settings(settings):
   # Required keys
@@ -37,7 +38,7 @@ def validate_settings(settings):
     if required_key not in settings: raise Exception('The "%s" key is required.' % required_key)
 
   # Default settings
-  if 'path' not in settings: settings['path'] = ['']
+  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
   if 'cache' not in settings: settings['cache'] = None
 
   # Type conversions
@@ -56,7 +57,7 @@ def load_config(settings):
     return yaml.load(open(settings['cache'],'r'))
 
   conn = connect(settings)
-  bucket = conn.get_bucket(settings['bucket'])
+  bucket = conn.get_bucket(settings['bucket'], validate=False)
 
   # Initialize the config with the pistachio keys
   config = {
@@ -68,12 +69,15 @@ def load_config(settings):
   # For each folder
   for folder in reversed(settings['path']):
     # Iterate through yaml files in the set folder
-    for key in bucket.list(folder):
+    for key in bucket.list(folder+'/', delimiter='/'):
       if key.name.endswith('.yaml'):
-        contents = key.get_contents_as_string()
-        config_partial = yaml.load(contents)
-        # Update the config with the config partial
-        config.update(config_partial)
+        try:
+          contents = key.get_contents_as_string()
+          # Update the config with the config partial
+          config_partial = yaml.load(contents)
+          config.update(config_partial)
+        except boto.exception.S3ResponseError:
+          pass # Access denied. Skip this one.
 
   # If settings['cache'] is set, we should cache the config locally to a file
   if settings['cache']:
@@ -81,6 +85,7 @@ def load_config(settings):
       pistachio_cache.write( yaml.dump(config, default_flow_style=False))
 
   return config
+
 
 # Set the CONFIG constant
 CONFIG = load_config(load_settings())
