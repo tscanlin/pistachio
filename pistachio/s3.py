@@ -1,5 +1,6 @@
 import boto
 import os
+import stat
 import yaml
 
 import settings
@@ -18,6 +19,9 @@ def load(s=settings.load()):
 
   # Load the file from a cache if one exists
   if s['cache'] and os.path.isfile(s['cache']):
+    mode = oct(stat.S_IMODE(os.stat(s['cache']).st_mode))
+    if not mode == '0600':
+      raise Exception('Cache file "%s" mode must be set to "0600"' % s['cache'])
     return yaml.load(open(s['cache'],'r'))
 
   conn = connect(s)
@@ -47,5 +51,6 @@ def load(s=settings.load()):
   if s['cache']:
     with open(s['cache'], 'w') as pistachio_cache:
       pistachio_cache.write( yaml.dump(config, default_flow_style=False))
+    os.chmod(s['cache'], 0600)
 
   return config
