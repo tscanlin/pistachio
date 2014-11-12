@@ -4,18 +4,25 @@ import yaml
 
 # File name to store the settings in
 FILE_NAME='.pistachio'
+ALTERNATIVE_FILE_NAME='pistachio.yaml'
 
 # Load settings from a pistachio.yaml file
 def load():
   settings = {}
   settings_files = []
 
-  # Search bottom up from the current directory for a pistachio.yaml file
+  # Search bottom up from the current directory for settings files
   path = os.getcwd()
   while True:
+    # Check for ALTERNATIVE_FILE_NAME file
+    alternative_settings_file = os.path.join(path, ALTERNATIVE_FILE_NAME)
+    if os.path.isfile(alternative_settings_file): settings_files.append(alternative_settings_file)
+    # Check for FILE_NAME file
     settings_file = os.path.join(path, FILE_NAME)
     if os.path.isfile(settings_file): settings_files.append(settings_file)
+    # Break out if we're at the root directory
     if path == '/': break
+    # Check the parent directory next
     path = os.path.abspath(os.path.join(path, os.pardir))
 
   # Check for a FILE_NAME file in the HOME directory
@@ -42,6 +49,9 @@ def load():
 def validate_file(file):
   loaded = yaml.load(open(file,'r'))
 
+  # Check if it's a proper yaml file
+  if not loaded: raise Exception('%s is not a proper yaml file.' % file)
+
   # Expand the fullpath of the cache, if set
   if 'cache' in loaded:
     loaded['cache'] = os.path.abspath(os.path.join(os.path.dirname(file), loaded['cache']))
@@ -51,6 +61,8 @@ def validate_file(file):
     mode = oct(stat.S_IMODE(os.stat(file).st_mode))
     if not mode == '0600':
       raise Exception('Pistachio settings file "%s" contains a key/secret. Mode must be set to "0600"' % file)
+    if os.path.basename(file) != FILE_NAME:
+      raise Exception('"{0}" is not a "{1}" file. Only "{1}" files can contain key/secrets'.format(file, FILE_NAME))
 
   return loaded
 
