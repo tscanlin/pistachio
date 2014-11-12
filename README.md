@@ -11,7 +11,7 @@ Put a `pistachio.yaml` file in your project repo with the following content:
 ```
 bucket: YOURBUCKETHERE
 ```
-Put another `pistachio.yaml` file in your home directory with the following content:
+Put another `.pistachio` file in your home directory with the following content:
 ```
 key: YOURAWSKEY
 secret: YOURAWSKEYSECRET
@@ -35,7 +35,8 @@ When you run `pistachio.load()` it:
 - Saves the loaded config to `pistachio.CONFIG`
 
 ## Settings
-This is loaded from files named `pistachio.yaml`.  
+This is loaded from files named `pistachio.yaml` and `.pistachio`.  
+Only `.pistachio` files can contain keys/secrets
 Keys set in higher priority files receive precedence and override lower priority files.
 #### Load priority from highest to lowest:  
 ##### 1. Environment variables prefixed with `PISTACHIO_`
@@ -46,18 +47,20 @@ Keys set in higher priority files receive precedence and override lower priority
 ./src/pistachio.yaml # Which Would Override...
 ./pistachio.yaml # 
 ```  
-##### 3. Lastly the `pistachio.yaml` from your $HOME directory if one exists
+##### 3. Lastly the `pistachio.yaml` or `.pistachio` from your $HOME directory if one exists
 This is a good place to set your personal AWS keys
-#### Format of `pistachio.yaml` files
+#### Format of `pistachio.yaml`/`.pistachio` files
 ```
 key: STRING 
 # REQUIRED
 # Key used to access the Amazon API
+# Can only be placed in .pistachio files
 ```
 ```
 secret: STRING 
 # REQUIRED
 # Secret Key used to access the Amazon API
+# Can only be placed in .pistachio files
 ```
 ```
 bucket: STRING 
