@@ -1,14 +1,10 @@
 import os
-import stat
 import yaml
 
 # Attempt to load cache from cache_path
 def load(cache_path):
   # Load the file from a cache if one exists
   if cache_path and os.path.isfile(cache_path):
-    mode = oct(stat.S_IMODE(os.stat(cache_path).st_mode))
-    if not mode == '0600':
-      raise Exception('Cache file "{0}" mode must be set to "0600", not "{1}"'.format(cache_path, mode))
     return yaml.load(open(cache_path,'r'))
 
   # Otherwise return None
