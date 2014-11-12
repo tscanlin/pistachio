@@ -1,1 +1,1 @@
-from s3 import load
+from main import *
