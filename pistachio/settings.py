@@ -74,7 +74,7 @@ def validate(settings):
     pass # Only 'cache' key is required, if the cache already exists.
   else:
     for required_key in ['key', 'secret', 'bucket']:
-      if required_key not in settings: raise Exception('The "%s" key is required.' % required_key)
+      if required_key not in settings: raise ValueError('The "%s" key is required.' % required_key)
 
   # Default settings
   if 'path' not in settings or settings['path'] is None: settings['path'] = ['']

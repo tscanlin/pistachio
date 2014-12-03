@@ -118,3 +118,10 @@ MyBucket/
   backend/
     aws.yaml
 ```    
+
+## Running tests
+All tests are in the test/ directory. To run them do the following:
+
+```
+python -m test
+```
