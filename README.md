@@ -77,10 +77,17 @@ path: STRING/ARRAY
 # When unset, looks in the root of the bucket.
 ```
 ```
-cache: STRING 
+cache: HASH
 # OPTIONAL
-# Path, relative to the pistachio.yaml file, to save/load cache from
 # When unset, does not attempt to load from cache, or save from cache.
+ path: STRING
+ # REQUIRED
+ # Not required if no cache hash is set
+ # Relative to the pistachio.yaml file, to save/load cache from
+ expires: INT
+ # OPTIONAL
+ # Time in minutes until cache will expire
+ # When unset, cache will not expire
 ```
 
 #### Example pistachio.yaml files
@@ -101,7 +108,9 @@ bucket: optimizely-pistachio-prod
 path:
   - www
   - common
-cache: ./pistachio.cache
+cache: 
+  path: ./pistachio.cache
+  expires: 60 # minutes
 ```
 
 ## Storing Credentials

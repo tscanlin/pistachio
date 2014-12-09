@@ -1,6 +1,6 @@
 # Util Test Module
 import copy
-from mock import patch
+import mock
 import unittest
 import pistachio.settings as settings
 
@@ -23,20 +23,18 @@ class TestValidate(unittest.TestCase):
       self.fail("settings.validate raised an exception unexpectedly!")
 
   # Test that validate passes when the cache exists
-  @patch('os.path.isfile')
-  def test_cache_exists(self, test_patch):
-    test_patch.return_value = True
-    test_settings = { 'cache': 'exists' }
+  @mock.patch('os.path.isfile', mock.Mock(return_value = True))
+  def test_cache_exists(self):
+    test_settings = { 'cache': { 'path': 'exists' } }
     try:
       settings.validate(test_settings)
     except:
       self.fail("settings.validate raised an exception unexpectedly!")
 
   # Test that validate fails when the cache doesn't exist, and we dont' have valid settings
-  @patch('os.path.isfile')
-  def test_cache_does_not_exist(self, test_patch):
-    test_patch.return_value = False
-    test_settings = { 'cache': 'does not exist' }
+  @mock.patch('os.path.isfile', mock.Mock(return_value = False))
+  def test_cache_does_not_exist(self):
+    test_settings = { 'cache': { 'path': 'does not exist' } }
     with self.assertRaises(ValueError):
       settings.validate(test_settings)
 
