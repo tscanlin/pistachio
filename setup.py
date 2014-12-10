@@ -14,4 +14,7 @@ setup(
     "PyYAML >= 3.11",
     "boto >= 2.32.1",
   ],
+  test_requires=[
+    "mock >= 1.0.1",
+  ],
 )

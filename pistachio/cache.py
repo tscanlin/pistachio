@@ -5,9 +5,10 @@ import yaml
 # Attempt to load cache from cache_path
 def load(cache):
   # Load the file from a cache if one exists and not expired
-  if cache['path'] and os.path.isfile(cache['path']):
-    if 'expires' not in cache or not is_expired(cache):
-      return yaml.load(open(cache['path'],'r'))
+  if ((cache['path'] and os.path.isfile(cache['path'])) and
+     cache.get('enabled', True) and
+     ('expires' not in cache or not is_expired(cache))):
+    return yaml.load(open(cache['path'],'r'))
 
   # Otherwise return None
   return None

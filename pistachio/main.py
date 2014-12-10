@@ -7,7 +7,7 @@ def load(s=settings.load()):
   # Validate the settings
   s = settings.validate(s)
 
-  # Attempt to load from cache
+  # Attempt to load from cache unless disabled
   loaded_cache = cache.load(s['cache'])
   if loaded_cache is not None: return loaded_cache
 

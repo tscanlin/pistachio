@@ -2,6 +2,7 @@
 import copy
 import mock
 import unittest
+
 import pistachio.cache as cache
 
 # Tests the cache.load
@@ -21,7 +22,7 @@ class TestLoad(unittest.TestCase):
     self.isfile_patch.stop()
     self.timenow_patch.stop()
     self.modifiedtime_patch.stop()
-
+    self.open_patch.stop()
 
   # Test that cache is ignored when expired
   def test_cache_expired(self):
@@ -37,6 +38,11 @@ class TestLoad(unittest.TestCase):
   def test_cache_no_expires_setting(self):
     test_cache = {'path': 'exists'}
     self.assertEqual(cache.load(test_cache), {'foo': 'bar'})
+
+  # Test that cache is ignored when no disabled
+  def test_cache_disabled(self):
+    test_cache = {'path': 'exists', 'enabled': False}
+    self.assertEqual(cache.load(test_cache), None)
 
 if __name__ == '__main__':
     unittest.main()

@@ -88,6 +88,10 @@ cache: HASH
  # OPTIONAL
  # Time in minutes until cache will expire
  # When unset, cache will not expire
+ enabled: BOOLEAN
+ # OPTIONAL
+ # DEFAULT: True
+ # When False, will disable cache
 ```
 
 #### Example pistachio.yaml files
