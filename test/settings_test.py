@@ -1,7 +1,8 @@
 # Util Test Module
 import copy
-from mock import patch
+import mock
 import unittest
+
 import pistachio.settings as settings
 
 # Tests the settings.validate function
@@ -13,6 +14,14 @@ class TestValidate(unittest.TestCase):
       'secret': 'exists',
       'bucket': 'exists',
     }
+    self.timenow_patch = mock.patch('time.time', mock.Mock(return_value = 120)) # 2 minutes since modified
+    self.timenow_patch.start()
+    self.modifiedtime_patch = mock.patch('os.path.getmtime', mock.Mock(return_value = 0))
+    self.modifiedtime_patch.start()
+
+  def tearDown(self):
+    self.timenow_patch.stop()
+    self.modifiedtime_patch.stop()
 
   # Test for existence of the minimum required keys for valid settings
   def test_minimum_valid_settings(self):
@@ -23,20 +32,41 @@ class TestValidate(unittest.TestCase):
       self.fail("settings.validate raised an exception unexpectedly!")
 
   # Test that validate passes when the cache exists
-  @patch('os.path.isfile')
-  def test_cache_exists(self, test_patch):
-    test_patch.return_value = True
-    test_settings = { 'cache': 'exists' }
+  @mock.patch('os.path.isfile', mock.Mock(return_value = True))
+  def test_cache_exists(self):
+    test_settings = {'cache': {'path': 'exists'}}
     try:
       settings.validate(test_settings)
     except:
       self.fail("settings.validate raised an exception unexpectedly!")
 
+  # Test that validate passes when the cache exists and expires is valid
+  @mock.patch('os.path.isfile', mock.Mock(return_value = True))
+  def test_cache_not_expired(self):
+    test_settings = {'cache': {'path': 'exists', 'expires': 3}}
+    try:
+      settings.validate(test_settings)
+    except:
+      self.fail("settings.validate raised an exception unexpectedly!")
+
+  # Test validate fails when the cache is expired and we don't have valid settings
+  @mock.patch('os.path.isfile', mock.Mock(return_value = True))
+  def test_cache_expired(self):
+    test_settings = {'cache': {'path': 'exists', 'expires': 1}}
+    with self.assertRaises(ValueError):
+      settings.validate(test_settings)
+
   # Test that validate fails when the cache doesn't exist, and we dont' have valid settings
-  @patch('os.path.isfile')
-  def test_cache_does_not_exist(self, test_patch):
-    test_patch.return_value = False
-    test_settings = { 'cache': 'does not exist' }
+  @mock.patch('os.path.isfile', mock.Mock(return_value = False))
+  def test_cache_does_not_exist(self):
+    test_settings = {'cache': {'path': 'does not exist'}}
+    with self.assertRaises(ValueError):
+      settings.validate(test_settings)
+
+  # Test that validate fails when the cache is disabled, and we dont' have valid settings
+  @mock.patch('os.path.isfile', mock.Mock(return_value = False))
+  def test_cache_disabled(self):
+    test_settings = {'cache': {'path': 'does not exist', 'enabled': False}}
     with self.assertRaises(ValueError):
       settings.validate(test_settings)
 

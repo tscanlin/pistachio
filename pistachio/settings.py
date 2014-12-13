@@ -2,6 +2,8 @@ import os
 import stat
 import yaml
 
+import cache
+
 # File name to store the settings in
 FILE_NAME='.pistachio'
 ALTERNATIVE_FILE_NAME='pistachio.yaml'
@@ -54,7 +56,7 @@ def validate_file(file):
 
   # Expand the fullpath of the cache, if set
   if 'cache' in loaded:
-    loaded['cache'] = os.path.abspath(os.path.join(os.path.dirname(file), loaded['cache']))
+    loaded['cache']['path'] = os.path.abspath(os.path.join(os.path.dirname(file), loaded['cache']['path']))
 
   # Check file security for open keys
   if 'key' in loaded or 'secret' in loaded:
@@ -70,8 +72,13 @@ def validate_file(file):
 # Validate settings and set defaults
 def validate(settings):
   # Required keys
-  if 'cache' in settings and settings['cache'] and os.path.isfile(settings['cache']):
-    pass # Only 'cache' key is required, if the cache already exists.
+  if ((settings.get('cache', {}).get('path', None) and os.path.isfile(settings['cache']['path'])) and
+     # cache exists
+     settings['cache'].get('enabled', True) and
+     # cache is enabled
+     (not settings['cache'].get('expires', None) or not cache.is_expired(settings['cache']))):
+     # 'expires' doesn't exist or is not expired
+    pass # Only 'cache' key is required, if the cache is valid
   else:
     for required_key in ['key', 'secret', 'bucket']:
       if required_key not in settings: raise ValueError('The "%s" key is required.' % required_key)
