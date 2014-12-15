@@ -4,6 +4,9 @@ import yaml
 
 # Attempt to load cache from cache_path
 def load(cache):
+  if cache is None:
+    return None
+
   # Load the file from a cache if one exists and not expired
   if ((cache['path'] and os.path.isfile(cache['path'])) and
      cache.get('enabled', True) and
