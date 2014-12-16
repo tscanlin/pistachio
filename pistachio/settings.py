@@ -71,6 +71,10 @@ def validate_file(file):
 
 # Validate settings and set defaults
 def validate(settings):
+  # Default settings
+  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
+  if 'cache' not in settings: settings['cache'] = {}
+
   # Required keys
   if ((settings.get('cache', {}).get('path', None) and os.path.isfile(settings['cache']['path'])) and
      # cache exists
@@ -82,10 +86,6 @@ def validate(settings):
   else:
     for required_key in ['key', 'secret', 'bucket']:
       if required_key not in settings: raise ValueError('The "%s" key is required.' % required_key)
-
-  # Default settings
-  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
-  if 'cache' not in settings: settings['cache'] = None
 
   # Type conversions
   if not isinstance(settings['path'], list):

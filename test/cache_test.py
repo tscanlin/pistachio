@@ -24,9 +24,9 @@ class TestLoad(unittest.TestCase):
     self.modifiedtime_patch.stop()
     self.open_patch.stop()
 
-  # Test that cache is ignored when it doesn't exist
+  # Test that cache is ignored when empty
   def test_cache_not_exist(self):
-    test_cache = None
+    test_cache = {}
     self.assertEqual(cache.load(test_cache), None)
 
   # Test that cache is ignored when expired
