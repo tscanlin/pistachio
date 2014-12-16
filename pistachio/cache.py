@@ -5,7 +5,7 @@ import yaml
 # Attempt to load cache from cache_path
 def load(cache):
   # Load the file from a cache if one exists and not expired
-  if (('path' in cache and os.path.isfile(cache['path'])) and
+  if ((cache.get('path', None) and os.path.isfile(cache['path'])) and
      cache.get('enabled', True) and
      ('expires' not in cache or not is_expired(cache))):
     return yaml.load(open(cache['path'],'r'))
@@ -16,7 +16,7 @@ def load(cache):
 
 # Write cache to cache_path
 def write(cache, config):
-  if 'path' in cache:
+  if cache.get('path', None):
     with open(cache['path'], 'w') as pistachio_cache:
       pistachio_cache.write( yaml.dump(config, default_flow_style=False))
     os.chmod(cache_path, 0600)
