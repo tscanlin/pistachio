@@ -85,7 +85,7 @@ def validate(settings):
 
   # Default settings
   if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
-  if 'cache' not in settings: settings['cache'] = None
+  if 'cache' not in settings: settings['cache'] = {}
 
   # Type conversions
   if not isinstance(settings['path'], list):

@@ -87,7 +87,7 @@ class TestValidate(unittest.TestCase):
   def test_cache_default(self):
     test_settings = copy.deepcopy(self.minimum_valid_settings)
     settings.validate(test_settings)
-    self.assertEqual(test_settings['cache'], None)
+    self.assertEqual(test_settings['cache'], {})
 
   # Test that it requires the 'key' key
   def test_key_required(self):
