@@ -1,13 +1,16 @@
 from distutils.core import setup
 
+version = open('VERSION').read().strip()
+
 setup(
   name='pistachio',
-  version='0.1.0',
+  version=version,
   author='Jon San Miguel',
   author_email='jon.sanmiguel@optimizely.com',
   packages=['pistachio'],
   url='https://github.com/optimizely/pistachio',
-  license='Copyright Optimizely',
+  download_url='https://github.com/optimizely/pistachio/tarball/%s' % version,
+  license=open('LICENSE').read(),
   description='Credential Loader for S3 Stored Credentials',
   long_description=open('README.md').read(),
   install_requires=[
