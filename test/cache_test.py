@@ -1,6 +1,7 @@
 # Util Test Module
 import copy
 import mock
+import sys
 import unittest
 
 import pistachio.cache as cache
@@ -15,7 +16,12 @@ class TestLoad(unittest.TestCase):
     self.timenow_patch.start()
     self.modifiedtime_patch = mock.patch('os.path.getmtime', mock.Mock(return_value = 0))
     self.modifiedtime_patch.start()
-    self.open_patch = mock.patch('__builtin__.open', mock.Mock(return_value = 'foo: bar'))
+    from sys import version_info
+    if version_info.major == 2:
+      builtins = '__builtin__'
+    else:
+      builtins = 'builtins'
+    self.open_patch = mock.patch('%s.open' % builtins, mock.Mock(return_value = 'foo: bar'))
     self.open_patch.start()
 
   def tearDown(self):

@@ -1,6 +1,6 @@
-import cache
-import s3
-import settings
+from . import cache
+from . import s3
+from . import settings
 
 SETTINGS = settings.load()
 memo = None

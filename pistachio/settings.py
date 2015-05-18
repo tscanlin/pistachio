@@ -2,7 +2,7 @@ import os
 import stat
 import yaml
 
-import cache
+from . import cache
 
 # File name to store the settings in
 FILE_NAME='.pistachio'
@@ -37,7 +37,7 @@ def load():
     settings.update(validate_file(settings_file))
 
   # Override settings from any environment variables
-  for var, val in os.environ.iteritems():
+  for var, val in os.environ.items():
     if var == 'PISTACHIO_PATH':
       # When path is set through environment variables, folders are ':' delimited
       settings['path'] = val.split(':')
@@ -61,8 +61,8 @@ def validate_file(file):
   # Check file security for open keys
   if 'key' in loaded or 'secret' in loaded:
     mode = oct(stat.S_IMODE(os.stat(file).st_mode))
-    if not mode == '0600':
-      raise Exception('Pistachio settings file "{0}" contains a key/secret. Mode must be set to "0600", not "{1}"'.format(file, mode))
+    if mode not in ['0o600', '0600']:
+      raise Exception('Pistachio settings file "{0}" contains a key/secret. Mode must be set to "0600" or "0o600", not "{1}"'.format(file, mode))
     if os.path.basename(file) != FILE_NAME:
       raise Exception('"{0}" is not a "{1}" file. Only "{1}" files can contain key/secrets'.format(file, FILE_NAME))
 

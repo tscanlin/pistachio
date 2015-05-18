@@ -1,7 +1,7 @@
 import boto
 import yaml
 
-import util
+from . import util
 
 
 def download(key, secret, bucket, path=[]):
