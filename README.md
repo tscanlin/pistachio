@@ -1,6 +1,7 @@
-![](https://travis-ci.org/optimizely/pistachio.svg?branch=master)
 S3 stored Credential loader module.
 ================
+[![Build Status](https://travis-ci.org/optimizely/pistachio.svg?branch=master)](https://travis-ci.org/optimizely/pistachio)
+
 Copyright Optimizely, Inc., All Rights Reserved.
 
 The `pistachio` module exists to load credentials stored on S3.  
