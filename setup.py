@@ -1,23 +1,22 @@
 from distutils.core import setup
 
-version = open('VERSION').read().strip()
+VERSION = open('VERSION').read().strip()
+with open('requirements/core.txt') as f:
+  INSTALL_REQUIRES = f.read().splitlines()
+with open('requirements/test.txt') as f:
+  TEST_REQUIRES = f.read().splitlines()
 
 setup(
   name='pistachio',
-  version=version,
+  version=VERSION,
   author='Jon San Miguel',
   author_email='jon.sanmiguel@optimizely.com',
   packages=['pistachio'],
   url='https://github.com/optimizely/pistachio',
-  download_url='https://github.com/optimizely/pistachio/tarball/%s' % version,
+  download_url='https://github.com/optimizely/pistachio/tarball/%s' % VERSION,
   license=open('LICENSE').read(),
   description='Credential Loader for S3 Stored Credentials',
   long_description=open('README.md').read(),
-  install_requires=[
-    "PyYAML >= 3.11",
-    "boto >= 2.32.1",
-  ],
-  test_requires=[
-    "mock >= 1.0.1",
-  ],
+  install_requires=INSTALL_REQUIRES,
+  test_requires=TEST_REQUIRES,
 )

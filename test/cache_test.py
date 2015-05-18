@@ -10,14 +10,20 @@ import pistachio.cache as cache
 class TestLoad(unittest.TestCase):
 
   def setUp(self):
+    # Mock isfile to return True
     self.isfile_patch = mock.patch('os.path.isfile', mock.Mock(return_value = True))
     self.isfile_patch.start()
+
+    # Freeze the time to two minutes
     self.timenow_patch = mock.patch('time.time', mock.Mock(return_value = 120)) # 2 minutes since modified
     self.timenow_patch.start()
+
+    # Set modified time to zero
     self.modifiedtime_patch = mock.patch('os.path.getmtime', mock.Mock(return_value = 0))
     self.modifiedtime_patch.start()
-    from sys import version_info
-    if version_info.major == 2:
+
+    # Mock open method to return without reading an actual file
+    if sys.version_info.major == 2:
       builtins = '__builtin__'
     else:
       builtins = 'builtins'

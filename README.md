@@ -1,3 +1,4 @@
+![](https://travis-ci.org/optimizely/pistachio.svg?branch=master)
 S3 stored Credential loader module.
 ================
 Copyright Optimizely, Inc., All Rights Reserved.
