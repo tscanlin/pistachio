@@ -4,9 +4,16 @@ import yaml
 from . import util
 
 
-def download(key, secret, bucket, path=[]):
-  # Create the connection
-  conn = boto.connect_s3(key, secret)
+def create_connection(settings):
+  """ Creates an S3 connection using credentials is skipauth is false """
+  if settings.get('skipauth'):
+    conn = boto.connect_s3()
+  else:
+    conn = boto.connect_s3(settings['key'], settings['secret'])
+  return conn
+
+
+def download(conn, bucket, path=[]):
   bucket = conn.get_bucket(bucket, validate=False)
 
   # Initialize the config with the pistachio keys

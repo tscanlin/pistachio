@@ -21,7 +21,8 @@ def load(s=SETTINGS):
     return loaded_cache
 
   # Otherwise, download from s3, and save to cache
-  loaded = s3.download(s['key'], s['secret'], s['bucket'], s['path'])
+  conn = s3.create_connection(s)
+  loaded = s3.download(conn, s['bucket'], s['path'])
   cache.write(s['cache'], loaded)
 
   # Memoize
@@ -36,7 +37,8 @@ def attempt_reload(s=SETTINGS):
 
   # Attempt to download from s3 and save to cache
   try:
-    loaded = s3.download(s['key'], s['secret'], s['bucket'], s['path'])
+    conn = s3.create_connection(s)
+    loaded = s3.download(conn, s['bucket'], s['path'])
     cache.write(s['cache'], loaded)
     # Memoize
     global memo

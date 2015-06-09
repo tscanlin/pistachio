@@ -65,9 +65,14 @@ secret: STRING
 # Can only be placed in .pistachio files
 ```
 ```
-bucket: STRING 
+bucket: STRING
 # REQUIRED
 # Bucket to load Configs from.
+```
+```
+skipauth: STRING
+# OPTIONAL
+# When set to 'true', the key & secret aren't used when creating the s3 connection
 ```
 ```
 path: STRING/ARRAY

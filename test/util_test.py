@@ -37,5 +37,26 @@ class TestMergeDicts(unittest.TestCase):
     d2 = { 'test': 'alsostring' }
     self.assertEqual(util.merge_dicts(d1, d2), d2)
 
+
+# Tests the util.truthy function
+class TestTruthy(unittest.TestCase):
+
+  def setUp(self):
+    self.truth_map = [
+      ('True', True),
+      ('true', True),
+      (True, True),
+      ('False', False),
+      ('false', False),
+      (False, False),
+      ('', False),
+      (None, False),
+    ]
+
+  def test_truth_map(self):
+    for arg, output in self.truth_map:
+      self.assertEqual(util.truthy(arg), output)
+
+
 if __name__ == '__main__':
     unittest.main()

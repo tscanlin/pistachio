@@ -1,4 +1,4 @@
-# Util Test Module
+# Settings Test Module
 import copy
 import mock
 import unittest
@@ -109,6 +109,20 @@ class TestValidate(unittest.TestCase):
     del test_settings['bucket']
     with self.assertRaises(ValueError):
       settings.validate(test_settings)
+
+  # Test that validate passes when skipauth is set to true and no key/secret is given
+  def test_skipauth_valid(self):
+    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    del test_settings['key']
+    del test_settings['secret']
+    test_settings['skipauth'] = True
+    try:
+      settings.validate(test_settings)
+    except Exception as e:
+      self.fail("""
+        settings.validate raised an exception unexpectedly!
+        Error: %s
+        """ % e)
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,6 +3,7 @@ import stat
 import yaml
 
 from . import cache
+from . import util
 
 # File name to store the settings in
 FILE_NAME='.pistachio'
@@ -71,24 +72,42 @@ def validate_file(file):
 
 # Validate settings and set defaults
 def validate(settings):
+  """
+  For the settings to be valid it must fulfill any of the following:
+  1. Have a valid cache file
+  2. Have a key & secret & bucket defined
+  3. Have skipauth set to true as well as a bucket defined
+  """
   # Default settings
   if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
   if 'cache' not in settings: settings['cache'] = {}
+  if 'skipauth' not in settings: settings['skipauth'] = False
 
-  # Required keys
+  # Check if There is a valid cache
   if ((settings.get('cache', {}).get('path', None) and os.path.isfile(settings['cache']['path'])) and
      # cache exists
      settings['cache'].get('enabled', True) and
      # cache is enabled
      (not settings['cache'].get('expires', None) or not cache.is_expired(settings['cache']))):
      # 'expires' doesn't exist or is not expired
-    pass # Only 'cache' key is required, if the cache is valid
+    pass
+  # Check if key & secret & bucket are defined
+  elif 'key' in settings and 'secret' in settings and 'bucket' in settings:
+    pass
+  # Check if userole is set to true & bucket are defined
+  elif settings.get('skipauth') and 'bucket' in settings:
+    pass
   else:
-    for required_key in ['key', 'secret', 'bucket']:
-      if required_key not in settings: raise ValueError('The "%s" key is required.' % required_key)
+    raise ValueError("""
+      For the settings to be valid it must fulfill any of the following:
+      1. Have a valid cache file
+      2. Have a key & secret & bucket defined
+      3. Have skipauth set to true as well as a bucket defined
+      """)
 
   # Type conversions
   if not isinstance(settings['path'], list):
     settings['path'] = [settings['path']]
+  settings['skipauth'] = util.truthy(settings['skipauth'])
 
   return settings
