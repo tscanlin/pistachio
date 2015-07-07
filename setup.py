@@ -16,7 +16,7 @@ setup(
   download_url='https://github.com/optimizely/pistachio/tarball/%s' % VERSION,
   license=open('LICENSE').read(),
   description='Credential Loader for S3 Stored Credentials',
-  long_description=open('README.md').read(),
+  long_description=open('README.rst').read(),
   install_requires=INSTALL_REQUIRES,
   test_requires=TEST_REQUIRES,
 )
