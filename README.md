@@ -40,18 +40,27 @@ When you run `pistachio.load()` it:
 This is loaded from files named `pistachio.yaml` and `.pistachio`.  
 Only `.pistachio` files can contain keys/secrets
 Keys set in higher priority files receive precedence and override lower priority files.
-#### Load priority from highest to lowest:  
+
+#### Load priority from highest to lowest:
+
 ##### 1. Environment variables prefixed with `PISTACHIO_`
-`export PISTACHIO_KEY=YOURKEYHERE` would override any keys set in the `pistachio.yaml` files  
+
+`export PISTACHIO_KEY=YOURKEYHERE` would override any keys set in the `pistachio.yaml` files
+
 ##### 2. The `pistachio.yaml` files starting from the current working directory, up to the root of the filesystem.
+
 ```
 ./src/www/pistachio.yaml # Would Override...
 ./src/pistachio.yaml # Which Would Override...
 ./pistachio.yaml # 
-```  
+```
+
 ##### 3. Lastly the `pistachio.yaml` or `.pistachio` from your $HOME directory if one exists
+
 This is a good place to set your personal AWS keys
+
 #### Format of `pistachio.yaml`/`.pistachio` files
+
 ```
 key: STRING 
 # REQUIRED
