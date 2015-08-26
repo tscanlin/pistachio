@@ -81,6 +81,7 @@ def validate(settings):
   # Default settings
   if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
   if 'cache' not in settings: settings['cache'] = {}
+  if 'parallel' not in settings: settings['parallel'] = False
   if 'skipauth' not in settings: settings['skipauth'] = False
 
   # Check if There is a valid cache
@@ -108,6 +109,7 @@ def validate(settings):
   # Type conversions
   if not isinstance(settings['path'], list):
     settings['path'] = [settings['path']]
+  settings['parallel'] = util.truthy(settings['parallel'])
   settings['skipauth'] = util.truthy(settings['skipauth'])
 
   return settings

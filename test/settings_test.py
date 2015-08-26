@@ -124,5 +124,18 @@ class TestValidate(unittest.TestCase):
         Error: %s
         """ % e)
 
+  # Test that validate() properly sets the default parallel value
+  def test_parallel_default(self):
+    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    settings.validate(test_settings)
+    self.assertFalse(test_settings['parallel'])
+
+  # Test that validate() properly sets parllel to True when 'true' is passed in as a string
+  def test_parallel_true_string(self):
+    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings['parallel'] = 'true'
+    settings.validate(test_settings)
+    self.assertTrue(test_settings['parallel'])
+
 if __name__ == '__main__':
     unittest.main()

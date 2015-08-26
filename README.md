@@ -79,6 +79,11 @@ bucket: STRING
 # Bucket to load Configs from.
 ```
 ```
+parallel: STRING
+# OPTIONAL
+# When set to 'true', s3 downloads run in parallel
+```
+```
 skipauth: STRING
 # OPTIONAL
 # When set to 'true', the key & secret aren't used when creating the s3 connection

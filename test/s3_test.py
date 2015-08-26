@@ -6,8 +6,8 @@ import unittest
 
 import pistachio.s3 as s3
 
-# Tests the settings.validate function
 class TestCreateConnection(unittest.TestCase):
+  """ Tests the s3.create_connection function """
 
   def setUp(self):
     self.minimum_valid_settings = {
@@ -48,6 +48,11 @@ class TestCreateConnection(unittest.TestCase):
       except:
         self.fail("settings.validate raised an exception unexpectedly!")
       connect_s3.assert_called_with()  # Called with no arguments
+
+
+class TestDownload(unittest.TestCase):
+  """ Tests the s3.download function """
+  pass  # TODO
 
 
 if __name__ == '__main__':
