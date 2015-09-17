@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 VERSION = open('VERSION').read().strip()
 with open('requirements/core.txt') as f:
@@ -19,4 +19,6 @@ setup(
   long_description=open('README.rst').read(),
   install_requires=INSTALL_REQUIRES,
   test_requires=TEST_REQUIRES,
+  py_modules=['pistachio'],
+  entry_points={'console_scripts': ['pistachio=pistachio.cli:main']},
 )
