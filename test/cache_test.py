@@ -1,10 +1,20 @@
 # Util Test Module
 import copy
 import mock
+import io
 import sys
 import unittest
 
 import pistachio.cache as cache
+
+# Get builtins based on python version
+if sys.version_info.major == 2:
+  builtins = '__builtin__'
+  import __builtin__ as builtins_module
+else:
+  builtins = 'builtins'
+  import builtins as builtins_module
+
 
 # Tests the cache.load
 class TestLoad(unittest.TestCase):
@@ -23,10 +33,6 @@ class TestLoad(unittest.TestCase):
     self.modifiedtime_patch.start()
 
     # Mock open method to return without reading an actual file
-    if sys.version_info.major == 2:
-      builtins = '__builtin__'
-    else:
-      builtins = 'builtins'
     self.open_patch = mock.patch('%s.open' % builtins, mock.Mock(return_value = 'foo: bar'))
     self.open_patch.start()
 
@@ -60,6 +66,43 @@ class TestLoad(unittest.TestCase):
   def test_cache_disabled(self):
     test_cache = {'path': 'exists', 'enabled': False}
     self.assertEqual(cache.load(test_cache), None)
+
+
+# Tests the cache.load
+class TestWrite(unittest.TestCase):
+
+  def setUp(self):
+    # Test loaded config
+    self.test_config = {'test': 'config'}
+
+    # Mock chmod to return True
+    self.chmod_patch = mock.patch('os.chmod', mock.Mock(return_value = True))
+    self.chmod_patch.start()
+
+  def tearDown(self):
+    self.chmod_patch.stop()
+
+  # Test that cache is not written when no path is set
+  @mock.patch.object(builtins_module, 'open')
+  def test_cache_not_set(self, open_mock):
+    test_cache = {}
+    cache.write(test_cache, self.test_config)
+    self.assertFalse(open_mock.called)
+
+  # Test that cache is written when path is set and enabled is set to true
+  @mock.patch.object(builtins_module, 'open')
+  def test_cache_enabled_true(self, open_mock):
+    test_cache = {'path': 'exists', 'enabled': True}
+    cache.write(test_cache, self.test_config)
+    self.assertTrue(open_mock.called)
+
+  # Test that cache is not written when path is set and enabled is set to false
+  @mock.patch.object(builtins_module, 'open')
+  def test_cache_enabled_true(self, open_mock):
+    test_cache = {'path': 'exists', 'enabled': False}
+    cache.write(test_cache, self.test_config)
+    self.assertFalse(open_mock.called)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -16,7 +16,7 @@ def load(cache):
 
 # Write cache to cache_path
 def write(cache, config):
-  if cache.get('path', None):
+  if cache.get('path', None) and cache['enabled']:
     with open(cache['path'], 'w') as pistachio_cache:
       pistachio_cache.write( yaml.safe_dump(config, default_flow_style=False))
     os.chmod(cache['path'], 0o600)

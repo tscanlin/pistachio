@@ -81,6 +81,7 @@ def validate(settings):
   # Default settings
   if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
   if 'cache' not in settings: settings['cache'] = {}
+  settings['cache'].setdefault('enabled', True)
   if 'parallel' not in settings: settings['parallel'] = False
   if 'skipauth' not in settings: settings['skipauth'] = False
 
