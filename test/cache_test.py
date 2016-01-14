@@ -47,24 +47,29 @@ class TestLoad(unittest.TestCase):
     test_cache = {}
     self.assertEqual(cache.load(test_cache), None)
 
+  # Test that cache is ignored when empty
+  def test_cache_no_settings(self):
+    test_cache = {'cache': {}}
+    self.assertEqual(cache.load(test_cache), None)
+
   # Test that cache is ignored when expired
   def test_cache_expired(self):
-    test_cache = {'path': 'exists', 'expires': 1} # 1 minute
+    test_cache = {'cache': {'path': 'exists', 'expires': 1}} # 1 minute
     self.assertEqual(cache.load(test_cache), None)
 
   # Test that cache is loaded when not expired
   def test_cache_not_expired(self):
-    test_cache = {'path': 'exists', 'expires': 3} # 3 minute
+    test_cache = {'cache': {'path': 'exists', 'expires': 3}} # 3 minute
     self.assertEqual(cache.load(test_cache), {'foo': 'bar'})
 
   # Test that cache is loaded when no expired is specified
   def test_cache_no_expires_setting(self):
-    test_cache = {'path': 'exists'}
+    test_cache = {'cache': {'path': 'exists'}}
     self.assertEqual(cache.load(test_cache), {'foo': 'bar'})
 
   # Test that cache is ignored when no disabled
   def test_cache_disabled(self):
-    test_cache = {'path': 'exists', 'enabled': False}
+    test_cache = {'cache': {'path': 'exists', 'enabled': False}}
     self.assertEqual(cache.load(test_cache), None)
 
 
@@ -85,21 +90,21 @@ class TestWrite(unittest.TestCase):
   # Test that cache is not written when no path is set
   @mock.patch.object(builtins_module, 'open')
   def test_cache_not_set(self, open_mock):
-    test_cache = {}
+    test_cache = {'cache': {}}
     cache.write(test_cache, self.test_config)
     self.assertFalse(open_mock.called)
 
   # Test that cache is written when path is set and enabled is set to true
   @mock.patch.object(builtins_module, 'open')
   def test_cache_enabled_true(self, open_mock):
-    test_cache = {'path': 'exists', 'enabled': True}
+    test_cache = {'cache': {'path': 'exists', 'enabled': True}}
     cache.write(test_cache, self.test_config)
     self.assertTrue(open_mock.called)
 
   # Test that cache is not written when path is set and enabled is set to false
   @mock.patch.object(builtins_module, 'open')
   def test_cache_enabled_true(self, open_mock):
-    test_cache = {'path': 'exists', 'enabled': False}
+    test_cache = {'cache': {'path': 'exists', 'enabled': False}}
     cache.write(test_cache, self.test_config)
     self.assertFalse(open_mock.called)
 
