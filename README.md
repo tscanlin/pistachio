@@ -30,7 +30,8 @@ value = config['some_key']
 #### Under the Hood
 When you run `pistachio.load()` it:  
 - Checks if you have a 'cache' setting
-  - If so, attepmpts to load from the cache file, if it exists
+  - If so, checks that `path` setting matches Pistachios `path` value in the cache file, if it exists
+  - If so, attempts to load from the cache file, if it exists
 - Otherwise, loads the config by merging yaml files from specified bucket/folders
   - This can be slow, as it has to download each file from S3 over the network
 - If 'cache' is set, saves the cache

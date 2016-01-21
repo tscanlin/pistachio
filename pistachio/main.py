@@ -16,14 +16,14 @@ def load(s=SETTINGS):
   s = settings.validate(s)
 
   # Attempt to load from cache unless disabled
-  loaded_cache = cache.load(s['cache'])
+  loaded_cache = cache.load(s)
   if loaded_cache is not None:
     return loaded_cache
 
   # Otherwise, download from s3, and save to cache
   conn = s3.create_connection(s)
   loaded = s3.download(conn, s['bucket'], s['path'], s['parallel'])
-  cache.write(s['cache'], loaded)
+  cache.write(s, loaded)
 
   # Memoize
   memo = loaded
@@ -39,7 +39,7 @@ def attempt_reload(s=SETTINGS):
   try:
     conn = s3.create_connection(s)
     loaded = s3.download(conn, s['bucket'], s['path'], s['parallel'])
-    cache.write(s['cache'], loaded)
+    cache.write(s, loaded)
     # Memoize
     global memo
     memo = loaded

@@ -7,11 +7,13 @@ import pistachio.main
 
 TEST_CONFIG = {
   'test': 'config',
+  'pistachio': {}
 }
 TEST_SETTINGS = {
   'key': 'test',
   'secret': 'test',
   'bucket': 'test',
+  'path': 'test',
 }
 
 # Tests the settings.validate function
@@ -42,9 +44,9 @@ class TestMemoization(unittest.TestCase):
     self.assertEqual(pistachio.main.memo, TEST_CONFIG)
 
   # Test that memo is not loaded on a reload
-  @mock.patch('pistachio.s3.download', mock.Mock(return_value = {'fraudulent': 'config'}))
+  @mock.patch('pistachio.s3.download', mock.Mock(return_value = {'fraudulent': 'config', 'pistachio': {}}))
   def test_reload_ignores_memo(self):
-    pistachio.main.attempt_reload(TEST_SETTINGS)
+    print pistachio.main.attempt_reload(TEST_SETTINGS)
     self.assertNotEqual(pistachio.main.memo, TEST_CONFIG)
 
 
