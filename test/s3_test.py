@@ -1,53 +1,89 @@
 # S3 Test Module
-import boto
+import boto3
+import botocore
 import copy
 import mock
 import unittest
 
 import pistachio.s3 as s3
 
+
 class TestCreateConnection(unittest.TestCase):
   """ Tests the s3.create_connection function """
 
   def setUp(self):
-    self.minimum_valid_settings = {
+    self.new_valid_settings = {  # Pistaciho VERSION 2.0 > pistachio settings
+      'profile': 'exists',
+      'bucket': 'exists',
+    }
+    self.old_valid_settings = {  # Pistachio VERSION 1.0 > pistachio settings
       'key': 'exists',
       'secret': 'exists',
       'bucket': 'exists',
     }
 
-  def test_using_key_and_secret_succeeds(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
-    with mock.patch('boto.connect_s3') as connect_s3:
+  def test_using_no_profile_uses_default_profile(self):
+    test_settings = self.new_valid_settings
+    del test_settings['profile']
+    with mock.patch('boto3.session.Session') as session:
       try:
         s3.create_connection(test_settings)
-      except:
-        self.fail("settings.validate raised an exception unexpectedly!")
-      connect_s3.assert_called_with('exists', 'exists')
+      except Exception as e:
+        self.fail(e)
+      session.assert_called_with(profile_name='default')
 
-  def test_using_key_and_secret_fails_when_no_key(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
-    del test_settings['key']
-    with mock.patch('boto.connect_s3') as connect_s3:
-      with self.assertRaises(KeyError):
-        s3.create_connection(test_settings)
+  def test_using_unknown_profile_fails(self):
+    test_settings = self.new_valid_settings
+    test_settings['profile'] = 'anonymous123+_not_a_profile$$$$'
+    with self.assertRaises(botocore.exceptions.ProfileNotFound):
+      s3.create_connection(test_settings)
 
-  def test_using_key_and_secret_fails_when_no_secret(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
-    del test_settings['key']
-    with mock.patch('boto.connect_s3') as connect_s3:
-      with self.assertRaises(KeyError):
-        s3.create_connection(test_settings)
-
-  def test_skip_auth_does_not_use_key_and_secret(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
-    test_settings['skipauth'] = True
-    with mock.patch('boto.connect_s3') as connect_s3:
+  def test_using_specified_profile_uses_specified_profile(self):
+    test_settings = self.new_valid_settings
+    test_settings['profile'] = 'not default'
+    with mock.patch('boto3.session.Session') as session:
       try:
         s3.create_connection(test_settings)
-      except:
-        self.fail("settings.validate raised an exception unexpectedly!")
-      connect_s3.assert_called_with()  # Called with no arguments
+      except Exception as e:
+        self.fail(e)
+      session.assert_called_with(profile_name='not default')
+
+  def test_using_deprecated_key_and_secret_uses_key_and_secret(self):
+    test_settings = self.old_valid_settings
+    with mock.patch('boto3.session.Session') as session:
+      try:
+        s3.create_connection(test_settings)
+      except Exception as e:
+        self.fail(e)
+      session.assert_called_with(aws_access_key_id='exists', aws_secret_access_key='exists')
+
+  def test_using_deprecated_key_only_uses_default_profile(self):
+    test_settings = self.old_valid_settings
+    del test_settings['secret']
+    with mock.patch('boto3.session.Session') as session:
+      try:
+        s3.create_connection(test_settings)
+      except Exception as e:
+        self.fail(e)
+      session.assert_called_with(profile_name='default')
+
+  def test_using_deprecated_secret_only_uses_default_profile(self):
+    test_settings = self.old_valid_settings
+    del test_settings['key']
+    with mock.patch('boto3.session.Session') as session:
+      try:
+        s3.create_connection(test_settings)
+      except Exception as e:
+        self.fail(e)
+      session.assert_called_with(profile_name='default')
+
+  def test_using_nothing_uses_default_profile(self):
+    with mock.patch('boto3.session.Session') as session:
+      try:
+        s3.create_connection({})
+      except Exception as e:
+        self.fail(e)
+      session.assert_called_with(profile_name='default')
 
 
 class TestDownload(unittest.TestCase):
