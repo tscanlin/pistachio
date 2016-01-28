@@ -12,6 +12,9 @@ def load(s=SETTINGS):
   if memo:
     return memo
 
+  # Fetch AWS credentials
+  s = settings.fetch_credentials(s)
+
   # Validate the settings
   s = settings.validate(s)
 
