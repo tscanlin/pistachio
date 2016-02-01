@@ -35,6 +35,9 @@ def load(s=SETTINGS):
 
 
 def attempt_reload(s=SETTINGS):
+  # Fetch AWS credentials
+  s = settings.fetch_credentials(s)
+
   # Validate the settings
   s = settings.validate(s)
 

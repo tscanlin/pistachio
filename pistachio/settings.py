@@ -1,6 +1,7 @@
 import os
 import stat
 import yaml
+import ConfigParser
 
 from . import cache
 from . import util
@@ -27,7 +28,6 @@ def load():
     # Check for PISTACHIO_FILE_NAME file
     settings_file = os.path.join(path, PISTACHIO_FILE_NAME)
     if os.path.isfile(settings_file): pistachio_files.append(settings_file)
-
     # Break out if we're at the root directory
     if path == '/': break
     # Otherwise, iterate up to the parent directory
@@ -64,15 +64,9 @@ def validate_pistachio_file(file):
   if 'cache' in loaded:
     loaded['cache']['path'] = os.path.abspath(os.path.join(os.path.dirname(file), loaded['cache']['path']))
 
-  # Warn about open pistachio keys or secrets
+  # Enforce open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
-    mode = oct(stat.S_IMODE(os.stat(file).st_mode))
-    if mode not in ['0o600', '0600']:
-      raise Exception('Pistachio settings file "{0}" contains a key/secret. Mode must be set to "0600" or "0o600", not "{1}"'.format(file, mode))
-    if os.path.basename(file) != PISTACHIO_FILE_NAME:
-      raise Exception('"{0}" is not a "{1}" file. Only "{1}" files can contain key/secrets'.format(file, PISTACHIO_FILE_NAME))
-    # print('[Pistachio]: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
-
+    print('Deprecated: Found "key" and "secret" in {0} - Using boto (aws) credentials instead'.format(file))
 
   return loaded
 
@@ -96,15 +90,6 @@ def validate(settings):
   1. Have a valid cache file
   2. Have a bucket defined
   """
-  # Default settings
-  settings['path_defined'] = True
-  if 'path' not in settings or settings['path'] is None: 
-    settings['path'] = ['']
-    settings['path_defined'] = False
-  if 'cache' not in settings: settings['cache'] = {}
-  settings['cache'].setdefault('enabled', True)
-  if 'parallel' not in settings: settings['parallel'] = False
-
   # Cache is valid
   has_valid_cache = os.path.isfile(settings.get('cache', {}).get('path', ''))
   # Cache is enabled
