@@ -35,6 +35,9 @@ def load(s=SETTINGS):
 
 
 def attempt_reload(s=SETTINGS):
+  # Fetch AWS credentials
+  s = settings.fetch_credentials(s)
+
   # Validate the settings
   s = settings.validate(s)
 
@@ -46,5 +49,6 @@ def attempt_reload(s=SETTINGS):
     # Memoize
     global memo
     memo = loaded
+    print('Pistachio successfully reloaded cache')
   except:
     print('Pistachio failed to reload cache')
