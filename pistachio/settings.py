@@ -57,34 +57,6 @@ def load():
   return settings
 
 
-def fetch_credentials(settings):
-  """
-  Fetch aws credentials
-  """
-  aws_credentials = {}  # AWS credentials
-  aws_files = []  # AWS specific files
-
-  # Check for a AWS_FILE_NAME file in the HOME -> AWS_DIR directory
-  if os.getenv('HOME'):
-    aws_settings_path = os.path.abspath(os.path.join(os.getenv('HOME'), AWS_DIR, AWS_FILE_NAME))
-    if os.path.isfile(aws_settings_path): 
-      aws_files.append(aws_settings_path)
-
-  # Load credentials from file depending on profile set
-  for aws_file in reversed(aws_files):
-    validated_aws_file = validate_aws_file(aws_file, settings['profile'])
-    if validated_aws_file: aws_credentials.update(validated_aws_file)
-
-  # Override credentials from AWS environment variables
-  for var, val in os.environ.items():
-    if var.lower() in AWS_ENV_VARIABLES:
-      aws_credentials[var.lower()] = val
-
-  settings.update({'aws': aws_credentials})
-
-  return settings
-
-
 def validate_pistachio_file(file):
   loaded = yaml.load(open(file,'r'))
 
@@ -95,80 +67,43 @@ def validate_pistachio_file(file):
   if 'cache' in loaded:
     loaded['cache']['path'] = os.path.abspath(os.path.join(os.path.dirname(file), loaded['cache']['path']))
 
-  # Enforce open pistachio keys or secrets
+  # Warn about open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
-    print('Deprecated: Found "key" and "secret" in {0} - Using boto (aws) credentials instead'.format(file))
-
-  return loaded
-
-
-def validate_aws_file(file, profile):
-  config = ConfigParser.SafeConfigParser()
-  loaded = {}
-
-  # Check if it's a proper ini file
-  try:
-    config.readfp(open(file, 'r'))
-  except ConfigParser.MissingSectionHeaderError or ConfigParser.ParsingError:
-    raise Exception('%s is not a proper ini file.' % file)
-
-  # Check if profile exists within file
-  if not config.has_section(profile):
-    return loaded
-
-  # Check file security for aws keys and secrets
-  if config.has_option(profile, 'aws_access_key_id') or config.has_option(profile, 'aws_secret_access_key') or config.has_option(profile, 'aws_session_token'):
-    mode = oct(stat.S_IMODE(os.stat(file).st_mode))
-    if mode not in ['0o600', '0600']:
-      raise Exception('AWS credentials file "{0}" contains a key|secret|token. Mode must be set to "0600" or "0o600", not "{1}"'.format(file, mode))
-
-  # Load ini config into a dict
-  loaded = dict(config.items(profile))
+    print('Warning: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
 
   return loaded
 
 
 # Validate settings and set defaults
 def validate(settings):
-  """
+  validation_message = """
   For the settings to be valid it must fulfill any of the following:
   1. Have a valid cache file
-  2. Have a aws_access_key_id & aws_secret_access_key & bucket defined
-  3. Have skipauth set to true as well as a bucket defined
+  2. Have a bucket defined
   """
   # Default settings
   if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
   if 'cache' not in settings: settings['cache'] = {}
   settings['cache'].setdefault('enabled', True)
   if 'parallel' not in settings: settings['parallel'] = False
-  if 'skipauth' not in settings: settings['skipauth'] = False
 
-  # # Check if There is a valid cache
-  # if ((settings.get('cache', {}).get('path', None) and os.path.isfile(settings['cache']['path'])) and
-  #    # cache exists
-  #    settings['cache'].get('enabled', True) and
-  #    # cache is enabled
-  #    (not settings['cache'].get('expires', None) or not cache.is_expired(settings['cache']))):
-  #    # 'expires' doesn't exist or is not expired
-  #   pass
-  # # Check if aws_access_key_id & aws_secret_access_key & bucket are defined
-  # elif 'aws_access_key_id' in settings and 'aws_secret_access_key' in settings and 'bucket' in settings:
-  #   pass
-  # # Check if userole is set to true & bucket are defined
-  # elif settings.get('skipauth') and 'bucket' in settings:
-  #   pass
-  # else:
-  #   raise ValueError("""
-  #     For the settings to be valid it must fulfill any of the following:
-  #     1. Have a valid cache file
-  #     2. Have a aws_access_key_id & aws_secret_access_key & bucket defined
-  #     3. Have skipauth set to true as well as a bucket defined
-  #     """)
+  # Check if There is a valid cache
+  if ((settings.get('cache', {}).get('path', None) and os.path.isfile(settings['cache']['path'])) and
+     # cache exists
+     settings['cache'].get('enabled', True) and
+     # cache is enabled
+     (not settings['cache'].get('expires', None) or not cache.is_expired(settings['cache']))):
+     # 'expires' doesn't exist or is not expired
+    pass
+  # Check if bucket is defined
+  elif 'bucket' in settings:
+    pass
+  else:
+    raise ValueError(validation_message)
 
   # Type conversions
   if not isinstance(settings['path'], list):
     settings['path'] = [settings['path']]
   settings['parallel'] = util.truthy(settings['parallel'])
-  settings['skipauth'] = util.truthy(settings['skipauth'])
 
   return settings

@@ -1,4 +1,5 @@
-import boto
+import boto3
+import botocore
 import threading
 import yaml
 
@@ -8,23 +9,30 @@ from . import util
 config_partials = None
 
 def create_connection(settings):
-  """ Creates an S3 connection using credentials is skipauth is false """
-  if settings.get('skipauth'):
-    conn = boto.connect_s3()
-  else:
-    conn = boto.connect_s3(settings['key'], settings['secret'])
-  return conn
+  """ Creates an S3 connection using AWS credentials """
+  # Set up session with specified profile or 'default'
+  if not settings.get('profile'):
+    print('Warning: Did not specify AWS profile - Using default profile')
+    settings['profile'] = 'default'
+
+  session = boto3.session.Session(profile_name=settings['profile'])
+  print('Profile: {}'.format(session.profile_name))
+
+  return session
 
 
-def download(conn, bucket, path=[], parallel=False):
+def download(session, bucket, path=[], parallel=False):
   """ Downloads the configs from S3, merges them, and returns a dict """
-  bucket = conn.get_bucket(bucket, validate=False)
+  # Use Amazon S3
+  conn = session.resource('s3')
+  # Specify bucket being accessed
+  bucket = conn.Bucket(bucket)
 
   # Initialize the config with the pistachio keys
   config = {
     'pistachio': {
-      'key': conn.access_key,
-      'secret': conn.secret_key,
+      'profile': session.profile_name,
+      'bucket': bucket.name,
     }
   }
   # For each folder
@@ -43,8 +51,8 @@ def download(conn, bucket, path=[], parallel=False):
   # Iterate through the folders in the path
   for folder in reversed(path):
     # Iterate through yaml files in the set folder
-    for key in bucket.list(folder+'/', delimiter='/'):
-      if key.name.endswith('.yaml'):
+    for key in bucket.objects.filter(Prefix=folder+'/', Delimiter='/'):
+      if key.key.endswith('.yaml'):
         # Download and store
         if parallel:
           thread = threading.Thread(target=fetch_config_partial, args=(folder, key))
@@ -69,11 +77,11 @@ def download(conn, bucket, path=[], parallel=False):
 def fetch_config_partial(folder, key):
   """ Downloads contents of an S3 file given an S3 key object """
   try:
-    contents = key.get_contents_as_string()
+    contents = key.get()['Body'].read()
 
     # Append the config_partials with the downloaded content
     global config_partials
     config_partials[folder].append(yaml.load(contents))
 
-  except boto.exception.S3ResponseError:
+  except botocore.exceptions.ClientError:
     pass # Access denied. Skip this one.

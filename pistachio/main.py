@@ -12,9 +12,6 @@ def load(s=SETTINGS):
   if memo:
     return memo
 
-  # Fetch AWS credentials
-  s = settings.fetch_credentials(s)
-
   # Validate the settings
   s = settings.validate(s)
 
@@ -24,8 +21,8 @@ def load(s=SETTINGS):
     return loaded_cache
 
   # Otherwise, download from s3, and save to cache
-  conn = s3.create_connection(s)
-  loaded = s3.download(conn, s['bucket'], s['path'], s['parallel'])
+  session = s3.create_connection(s)
+  loaded = s3.download(session, s['bucket'], s['path'], s['parallel'])
   cache.write(s, loaded)
 
   # Memoize
@@ -35,16 +32,13 @@ def load(s=SETTINGS):
 
 
 def attempt_reload(s=SETTINGS):
-  # Fetch AWS credentials
-  s = settings.fetch_credentials(s)
-
   # Validate the settings
   s = settings.validate(s)
 
   # Attempt to download from s3 and save to cache
   try:
-    conn = s3.create_connection(s)
-    loaded = s3.download(conn, s['bucket'], s['path'], s['parallel'])
+    session = s3.create_connection(s)
+    loaded = s3.download(session, s['bucket'], s['path'], s['parallel'])
     cache.write(s, loaded)
     # Memoize
     global memo
