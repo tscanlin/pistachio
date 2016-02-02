@@ -64,7 +64,7 @@ def validate_pistachio_file(file):
   if 'cache' in loaded:
     loaded['cache']['path'] = os.path.abspath(os.path.join(os.path.dirname(file), loaded['cache']['path']))
 
-  # Enforce open pistachio keys or secrets
+  # Warn about open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
     print('Deprecated: Found "key" and "secret" in {0} - Using boto (aws) credentials instead'.format(file))
 

@@ -1,6 +1,9 @@
 import boto3
 import botocore
+<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
 import sys
+=======
+>>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
 import threading
 import yaml
 
@@ -15,6 +18,7 @@ pool = threading.BoundedSemaphore(value=maxconn)
 
 def create_connection(settings):
   """ Creates an S3 connection using AWS credentials """
+<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
   # Temporary support for keys and secrets
   if settings.get('key') and settings.get('secret'):
     print('[Pistachio]: Using your .pistachio keys and secrets')
@@ -28,24 +32,46 @@ def create_connection(settings):
 
     session = boto3.session.Session(profile_name=settings['profile'])
     print('[Pistachio]: Using {} profile'.format(session.profile_name))
+=======
+  # Set up session with specified profile or 'default'
+  if not settings.get('profile'):
+    print('Warning: Did not specify AWS profile - Using default profile')
+    settings['profile'] = 'default'
+
+  session = boto3.session.Session(profile_name=settings['profile'])
+  print('Profile: {}'.format(session.profile_name))
+>>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
 
   return session
 
 
+<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
 def download(session, settings):
+=======
+def download(session, bucket, path=[], parallel=False):
+>>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
   """ Downloads the configs from S3, merges them, and returns a dict """
   # Use Amazon S3
   conn = session.resource('s3')
   # Specify bucket being accessed
+<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
   Bucket = conn.Bucket(settings['bucket'])
+=======
+  bucket = conn.Bucket(bucket)
+>>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
 
   # Initialize the config with the pistachio keys
   config = {
     'pistachio': {
+<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
       'key': settings.get('key'),
       'secret': settings.get('secret'),
       'profile': session.profile_name,
       'bucket': Bucket.name,
+=======
+      'profile': session.profile_name,
+      'bucket': bucket.name,
+>>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
     }
   }
   # For each folder
@@ -64,7 +90,11 @@ def download(session, settings):
   # Iterate through the folders in the path
   for folder in reversed(settings['path']):
     # Iterate through yaml files in the set folder
+<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
     for key in Bucket.objects.filter(Prefix=folder + '/', Delimiter='/'):
+=======
+    for key in bucket.objects.filter(Prefix=folder+'/', Delimiter='/'):
+>>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
       if key.key.endswith('.yaml'):
         # Download and store
         if settings['parallel']:
