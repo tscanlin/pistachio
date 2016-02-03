@@ -77,7 +77,7 @@ profile: STRING
 ```
 parallel: STRING
 # OPTIONAL
-# DEFAULT: False
+# DEFAULT: 'false'
 # When set to 'true', s3 downloads run in parallel
 ```
 ```
