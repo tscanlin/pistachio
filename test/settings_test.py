@@ -9,7 +9,11 @@ import pistachio.settings as settings
 class TestValidate(unittest.TestCase):
 
   def setUp(self):
-    self.minimum_valid_settings = {
+    self.new_valid_settings = {
+      'profile': 'exists',
+      'bucket': 'exists',
+    }
+    self.old_valid_settings = {
       'key': 'exists',
       'secret': 'exists',
       'bucket': 'exists',
@@ -23,9 +27,17 @@ class TestValidate(unittest.TestCase):
     self.timenow_patch.stop()
     self.modifiedtime_patch.stop()
 
-  # Test for existence of the minimum required keys for valid settings
-  def test_minimum_valid_settings(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+  # Test for the new valid settings
+  def test_new_valid_settings(self):
+    test_settings = copy.deepcopy(self.new_valid_settings)
+    try:
+      settings.validate(test_settings)
+    except:
+      self.fail("settings.validate raised an exception unexpectedly!")
+
+  # Test for the old valid settings
+  def test_old_valid_settings(self):
+    test_settings = copy.deepcopy(self.old_valid_settings)
     try:
       settings.validate(test_settings)
     except:
@@ -72,67 +84,66 @@ class TestValidate(unittest.TestCase):
 
   # Test that validate() properly sets the default path value
   def test_path_default(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = copy.deepcopy(self.old_valid_settings)
     settings.validate(test_settings)
     self.assertEqual(test_settings['path'], [''])
 
   # Test that validate() converts the path to an array
   def test_path_type_conversion(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = copy.deepcopy(self.old_valid_settings)
     test_settings['path'] = 'filepath'
     settings.validate(test_settings)
     self.assertEqual(test_settings['path'], ['filepath'])
 
   # Test that validate() properly sets the default path value
   def test_cache_default(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = copy.deepcopy(self.old_valid_settings)
     settings.validate(test_settings)
     self.assertEqual(test_settings['cache'], {'enabled': True})
 
-  # Test that it requires the 'key' key
-  def test_key_required(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
-    del test_settings['key']
-    with self.assertRaises(ValueError):
+  # Test that it does not require the 'key' key
+  def test_no_key(self):
+    test_settings = copy.deepcopy(self.old_valid_settings)
+    try:
       settings.validate(test_settings)
+    except Exception as e:
+      self.fail(e)
 
-  # Test that it requires the 'secret' key
-  def test_secret_required(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+  # Test that it does not require the 'secret' key
+  def test_no_secret(self):
+    test_settings = copy.deepcopy(self.old_valid_settings)
     del test_settings['secret']
-    with self.assertRaises(ValueError):
+    try:
       settings.validate(test_settings)
+    except Exception as e:
+      self.fail(e)
 
   # Test that it requires the 'bucket' key
   def test_bucket_required(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = copy.deepcopy(self.old_valid_settings)
     del test_settings['bucket']
     with self.assertRaises(ValueError):
       settings.validate(test_settings)
 
-  # Test that validate passes when skipauth is set to true and no key/secret is given
-  def test_skipauth_valid(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+  # Test that validate passes when no key/secret is given
+  def test_no_key_or_secret(self):
+    test_settings = copy.deepcopy(self.old_valid_settings)
     del test_settings['key']
     del test_settings['secret']
-    test_settings['skipauth'] = True
     try:
       settings.validate(test_settings)
     except Exception as e:
-      self.fail("""
-        settings.validate raised an exception unexpectedly!
-        Error: %s
-        """ % e)
+      self.fail(e)
 
   # Test that validate() properly sets the default parallel value
   def test_parallel_default(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = copy.deepcopy(self.old_valid_settings)
     settings.validate(test_settings)
     self.assertFalse(test_settings['parallel'])
 
   # Test that validate() properly sets parllel to True when 'true' is passed in as a string
   def test_parallel_true_string(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = copy.deepcopy(self.old_valid_settings)
     test_settings['parallel'] = 'true'
     settings.validate(test_settings)
     self.assertTrue(test_settings['parallel'])

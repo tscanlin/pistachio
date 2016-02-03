@@ -10,9 +10,8 @@ TEST_CONFIG = {
   'pistachio': {}
 }
 TEST_SETTINGS = {
-  'key': 'test',
-  'secret': 'test',
   'bucket': 'test',
+  'profile': 'test',
   'path': 'test',
 }
 
@@ -32,18 +31,21 @@ class TestMemoization(unittest.TestCase):
 
   # Test that memo is set when unset
   @mock.patch('pistachio.cache.load', mock.Mock(return_value = None))
+  @mock.patch('pistachio.s3.create_connection', mock.Mock(return_value = {}))
   @mock.patch('pistachio.s3.download', mock.Mock(return_value = TEST_CONFIG))
   def test_memo_set_on_load(self):
     pistachio.main.load(TEST_SETTINGS)
     self.assertEqual(pistachio.main.memo, TEST_CONFIG)
 
   # Test that memo is set when on reload
+  @mock.patch('pistachio.s3.create_connection', mock.Mock(return_value = {}))
   @mock.patch('pistachio.s3.download', mock.Mock(return_value = TEST_CONFIG))
   def test_returns_memo_on_reload(self):
     pistachio.main.attempt_reload(TEST_SETTINGS)
     self.assertEqual(pistachio.main.memo, TEST_CONFIG)
 
   # Test that memo is not loaded on a reload
+  @mock.patch('pistachio.s3.create_connection', mock.Mock(return_value = {}))
   @mock.patch('pistachio.s3.download', mock.Mock(return_value = {'fraudulent': 'config', 'pistachio': {}}))
   def test_reload_ignores_memo(self):
     print pistachio.main.attempt_reload(TEST_SETTINGS)
