@@ -5,8 +5,7 @@ S3 stored Credential loader module.
 Copyright Optimizely, Inc., All Rights Reserved.
 
 The `pistachio` module exists to load credentials stored on S3.   
-This package works in conjunction with [boto3](https://github.com/boto/boto3) to link your AWS credentials 
-and seamlessly connect you to your Amazon S3 bucket.  
+This package works in conjunction with [boto3](https://github.com/boto/boto3) to seamlessly connect you to your Amazon S3 bucket.  
 This package understands nothing about how your S3 security is managed.  
 This package assumes it has access to the S3 bucket/folder(s) you set it to use.
 
