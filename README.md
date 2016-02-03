@@ -81,13 +81,13 @@ parallel: STRING
 # When set to 'true', s3 downloads run in parallel
 ```
 ```
-path: STRING (Delimited by ':' for multiple folders)
+path: STRING/LIST
 # OPTIONAL
-# DEFAULT: ''  # All contents of bucket
+# DEFAULT: ['']  # All contents of bucket
 # Folder(s) within the bucket to load from.
 # Can be string or array.  
 # When an array, folders listed first have higher precedence.
-# When setting through ENV variable, folders are ':' delimited. E.g. `PISTACHIO_PATH=prod:dev`
+# When setting through ENV variable, folders are ':' delimited. E.g. `PISTACHIO_PATH=folder1:folder2`
 # When unset, looks in the root of the bucket.
 ```
 ```
