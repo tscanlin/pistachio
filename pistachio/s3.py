@@ -56,7 +56,8 @@ def download(conn, bucket, path=[], parallel=False):
   # Wait for the threads to finish if we're running in parallel
   if parallel:
     for thread in threads:
-      thread.join()
+      # fix to timeout after 1 second if thread isn't finished instead of blocking
+      thread.join(1)
 
   # Merge them together
   for folder in reversed(path):
