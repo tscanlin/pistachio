@@ -1,7 +1,6 @@
 import os
 import stat
 import yaml
-import ConfigParser
 
 from . import cache
 from . import util
