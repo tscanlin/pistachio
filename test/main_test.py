@@ -48,7 +48,7 @@ class TestMemoization(unittest.TestCase):
   @mock.patch('pistachio.s3.create_connection', mock.Mock(return_value = {}))
   @mock.patch('pistachio.s3.download', mock.Mock(return_value = {'fraudulent': 'config', 'pistachio': {}}))
   def test_reload_ignores_memo(self):
-    print pistachio.main.attempt_reload(TEST_SETTINGS)
+    print(pistachio.main.attempt_reload(TEST_SETTINGS))
     self.assertNotEqual(pistachio.main.memo, TEST_CONFIG)
 
 
