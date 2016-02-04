@@ -98,8 +98,8 @@ def fetch_config_partial(folder, key):
     global config_partials
     config_partials[folder].append(yaml.load(contents))
 
-  except botocore.exceptions.ClientError:
-    print("boto exception on %s" % key )
+  except botocore.exceptions.ClientError as e:
+    print("s3 exception on %s: %s" % (key, e))
   except:
     print("Unexpected error: %s" % sys.exc_info()[0])
   finally:
