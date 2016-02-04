@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 VERSION = open('VERSION').read().strip()
 with open('requirements/core.txt') as f:
