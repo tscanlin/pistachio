@@ -101,6 +101,6 @@ def fetch_config_partial(folder, key):
   except botocore.exceptions.ClientError:
     print("boto exception on %s" % key )
   except:
-    print "Unexpected error:", sys.exc_info()[0]
+    print("Unexpected error: %s" % sys.exc_info()[0])
   finally:
     pool.release()
