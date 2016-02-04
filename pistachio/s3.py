@@ -83,8 +83,8 @@ def fetch_config_partial(folder, key):
     config_partials[folder].append(yaml.load(contents))
 
   except boto.exception.S3ResponseError:
-    print("boto exception on %s" % key )
+    print("boto exception on %s" % key)
   except:
-    print "Unexpected error:", sys.exc_info()[0]
+    print("Unexpected error: %s" % sys.exc_info()[0])
   finally:
     pool.release()
