@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 VERSION = open('VERSION').read().strip()
 with open('requirements/core.txt') as f:
@@ -18,5 +18,6 @@ setup(
   description='Credential Loader for S3 Stored Credentials',
   long_description=open('README.rst').read(),
   install_requires=INSTALL_REQUIRES,
-  test_requires=TEST_REQUIRES,
+  tests_require=TEST_REQUIRES,
+  test_suite='test',
 )
