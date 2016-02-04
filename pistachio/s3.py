@@ -1,4 +1,5 @@
 import boto
+import sys
 import threading
 import yaml
 
@@ -6,6 +7,10 @@ from . import util
 
 # This is module level so it can be appended to by multiple threads
 config_partials = None
+
+# rate limit
+maxconn = 100
+pool = threading.BoundedSemaphore(value=maxconn)
 
 def create_connection(settings):
   """ Creates an S3 connection using credentials is skipauth is false """
@@ -56,7 +61,8 @@ def download(conn, bucket, path=[], parallel=False):
   # Wait for the threads to finish if we're running in parallel
   if parallel:
     for thread in threads:
-      thread.join()
+      # timeout in 5 seconds
+      thread.join(5)
 
   # Merge them together
   for folder in reversed(path):
@@ -69,11 +75,16 @@ def download(conn, bucket, path=[], parallel=False):
 def fetch_config_partial(folder, key):
   """ Downloads contents of an S3 file given an S3 key object """
   try:
+    pool.acquire()
     contents = key.get_contents_as_string()
 
     # Append the config_partials with the downloaded content
     global config_partials
     config_partials[folder].append(yaml.load(contents))
 
-  except boto.exception.S3ResponseError:
-    pass # Access denied. Skip this one.
+  except boto.exception.S3ResponseError as e:
+    print("s3 exception on %s: %s" % (key, e))
+  except:
+    print("Unexpected error: %s" % sys.exc_info()[0])
+  finally:
+    pool.release()
