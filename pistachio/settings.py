@@ -66,7 +66,7 @@ def validate_pistachio_file(file):
 
   # Warn about open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
-    print('Deprecated: Found "key" and "secret" in {0} - Using boto (aws) credentials instead'.format(file))
+    print('[Pistachio]: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
 
   return loaded
 
