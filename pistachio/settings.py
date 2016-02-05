@@ -9,10 +9,6 @@ from . import util
 # Pistachio
 PISTACHIO_FILE_NAME='.pistachio'
 PISTACHIO_ALTERNATIVE_FILE_NAME='pistachio.yaml'
-# AWS
-AWS_DIR='.aws'
-AWS_FILE_NAME='credentials'
-AWS_ENV_VARIABLES=['aws_access_key_id', 'aws_secret_access_key', 'aws_session_token']
 
 def load():
   """
