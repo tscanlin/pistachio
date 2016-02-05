@@ -43,6 +43,6 @@ def attempt_reload(s=SETTINGS):
     # Memoize
     global memo
     memo = loaded
-    print('Pistachio successfully reloaded cache')
+    print('[Pistachio]: Successfully reloaded cache')
   except:
-    print('Pistachio failed to reload cache')
+    print('[Pistachio]: Failed to reload cache')

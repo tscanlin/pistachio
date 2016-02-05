@@ -12,11 +12,11 @@ def create_connection(settings):
   """ Creates an S3 connection using AWS credentials """
   # Set up session with specified profile or 'default'
   if not settings.get('profile'):
-    print('Warning: Did not specify AWS profile - Using default profile')
+    print('[Pistachio]: Did not specify AWS profile - Using default profile')
     settings['profile'] = 'default'
 
   session = boto3.session.Session(profile_name=settings['profile'])
-  print('Profile: {}'.format(session.profile_name))
+  print('[Pistachio]: Using {} profile'.format(session.profile_name))
 
   return session
 
@@ -51,7 +51,7 @@ def download(session, bucket, path=[], parallel=False):
   # Iterate through the folders in the path
   for folder in reversed(path):
     # Iterate through yaml files in the set folder
-    for key in bucket.objects.filter(Prefix=folder+'/', Delimiter='/'):
+    for key in bucket.objects.filter(Prefix=folder + '/', Delimiter='/'):
       if key.key.endswith('.yaml'):
         # Download and store
         if parallel:

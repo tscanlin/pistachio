@@ -68,7 +68,7 @@ def validate_pistachio_file(file):
 
   # Warn about open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
-    print('Warning: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
+    print('[Pistachio]: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
 
   return loaded
 
@@ -86,13 +86,15 @@ def validate(settings):
   settings['cache'].setdefault('enabled', True)
   if 'parallel' not in settings: settings['parallel'] = False
 
-  # Check if There is a valid cache
-  if ((settings.get('cache', {}).get('path', None) and os.path.isfile(settings['cache']['path'])) and
-     # cache exists
-     settings['cache'].get('enabled', True) and
-     # cache is enabled
-     (not settings['cache'].get('expires', None) or not cache.is_expired(settings['cache']))):
-     # 'expires' doesn't exist or is not expired
+  # Cache is valid
+  has_valid_cache = os.path.isfile(settings.get('cache', {}).get('path', ''))
+  # Cache is enabled
+  cache_enabled = settings.get('cache', {}).get('enabled', True)
+  # Cache is expired
+  cache_has_expired = settings.get('cache', {}).get('expires')
+  cache_expired = cache_has_expired and cache.is_expired(settings['cache'])
+
+  if has_valid_cache and cache_enabled and not cache_expired:
     pass
   # Check if bucket is defined
   elif 'bucket' in settings:
