@@ -77,6 +77,18 @@ def validate_pistachio_file(file):
   return loaded
 
 
+# Set the default values for missing fields
+def set_defaults(settings):
+  # Default settings
+  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
+  if 'cache' not in settings: settings['cache'] = {}
+  settings['cache'].setdefault('enabled', True)
+  if 'parallel' not in settings: settings['parallel'] = False
+  if 'skipauth' not in settings: settings['skipauth'] = False
+
+  return settings
+
+
 # Validate settings and set defaults
 def validate(settings):
   validation_message = """
@@ -110,8 +122,11 @@ def validate(settings):
     raise ValueError(validation_message)
 
   # Type conversions
-  if not isinstance(settings['path'], list):
+  if not isinstance(settings.get('path', []), list):
     settings['path'] = [settings['path']]
-  settings['parallel'] = util.truthy(settings['parallel'])
+  if not isinstance(settings.get('parallel', False), bool):
+    settings['parallel'] = util.truthy(settings['parallel'])
+  if not isinstance(settings.get('skipauth', False), bool):
+    settings['skipauth'] = util.truthy(settings['skipauth'])
 
   return settings
