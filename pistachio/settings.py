@@ -85,7 +85,10 @@ def validate(settings):
   2. Have a bucket defined
   """
   # Default settings
-  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
+  settings['path_defined'] = True
+  if 'path' not in settings or settings['path'] is None: 
+    settings['path'] = ['']
+    settings['path_defined'] = False
   if 'cache' not in settings: settings['cache'] = {}
   settings['cache'].setdefault('enabled', True)
   if 'parallel' not in settings: settings['parallel'] = False

@@ -87,6 +87,7 @@ class TestValidate(unittest.TestCase):
     test_settings = self.old_valid_settings
     settings.validate(test_settings)
     self.assertEqual(test_settings['path'], [''])
+    self.assertEqual(test_settings['path_defined'], False)
 
   # Test that validate() converts the path to an array
   def test_path_type_conversion(self):
@@ -94,12 +95,14 @@ class TestValidate(unittest.TestCase):
     test_settings['path'] = 'filepath'
     settings.validate(test_settings)
     self.assertEqual(test_settings['path'], ['filepath'])
+    self.assertEqual(test_settings['path_defined'], True)
 
   # Test that validate() properly sets the default path value
   def test_cache_default(self):
     test_settings = self.old_valid_settings
     settings.validate(test_settings)
     self.assertEqual(test_settings['cache'], {'enabled': True})
+    self.assertEqual(test_settings['path_defined'], False)
 
   # Test that it does not require the 'key' key
   def test_no_key(self):
