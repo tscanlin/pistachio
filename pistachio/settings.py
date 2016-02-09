@@ -19,6 +19,7 @@ def load():
 
   # Search bottom up from the current directory for settings files
   path = os.getcwd()
+
   while True:
     # Check for PISTACHIO_ALTERNATIVE_FILE_NAME file
     alternative_settings_file = os.path.join(path, PISTACHIO_ALTERNATIVE_FILE_NAME)
@@ -26,9 +27,10 @@ def load():
     # Check for PISTACHIO_FILE_NAME file
     settings_file = os.path.join(path, PISTACHIO_FILE_NAME)
     if os.path.isfile(settings_file): pistachio_files.append(settings_file)
+
     # Break out if we're at the root directory
     if path == '/': break
-    # Check the parent directory next
+    # Otherwise, iterate up to the parent directory
     path = os.path.abspath(os.path.join(path, os.pardir))
 
   # Check for a PISTACHIO_FILE_NAME file in the HOME directory
@@ -64,7 +66,11 @@ def validate_pistachio_file(file):
 
   # Warn about open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
+    mode = oct(stat.S_IMODE(os.stat(file).st_mode))
+    if mode not in ['0o600', '0600']:
+      raise Exception('Pistachio settings file "{0}" contains a key/secret. Mode must be set to "0600" or "0o600", not "{1}"'.format(file, mode))
     print('[Pistachio]: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
+
 
   return loaded
 
