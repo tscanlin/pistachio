@@ -17,11 +17,10 @@ def load(settings):
 
     settings_path = settings.get('path') 
     cache_path = loaded.get('pistachio',{}).get('path')
-    settings_is_path_defined = settings.get('path_defined')
 
     # Check if cache is invalid
-    if settings_path and cache_path and settings_is_path_defined and settings_path != cache_path:
-        return None
+    if settings_path and cache_path and settings_path != cache_path:
+      return None
 
     return loaded
 

@@ -21,7 +21,7 @@ def create_connection(settings):
   return conn
 
 
-def download(conn, bucket, path=[], parallel=False):
+def download(conn, bucket, path, parallel):
   """ Downloads the configs from S3, merges them, and returns a dict """
   bucket = conn.get_bucket(bucket, validate=False)
 

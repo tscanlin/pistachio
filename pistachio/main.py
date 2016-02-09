@@ -20,7 +20,10 @@ def load(s=SETTINGS):
   if loaded_cache is not None:
     return loaded_cache
 
-  # Otherwise, download from s3, and save to cache
+  # Set defaults before connecting to S3
+  s = settings.set_defaults(s)
+
+  # Download from s3, and save to cache
   conn = s3.create_connection(s)
   loaded = s3.download(conn, s['bucket'], s['path'], s['parallel'])
   cache.write(s, loaded)

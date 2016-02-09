@@ -73,24 +73,52 @@ class TestValidate(unittest.TestCase):
   # Test that validate() properly sets the default path value
   def test_path_default(self):
     test_settings = copy.deepcopy(self.minimum_valid_settings)
+    # Validate
     settings.validate(test_settings)
-    self.assertEqual(test_settings['path'], [''])
-    self.assertEqual(test_settings['path_defined'], False)
+    self.assertEqual(test_settings.get('path'), None)
+    # Default
+    settings.set_defaults(test_settings)
+    self.assertEqual(test_settings.get('path'), [''])
 
   # Test that validate() converts the path to an array
   def test_path_type_conversion(self):
     test_settings = copy.deepcopy(self.minimum_valid_settings)
     test_settings['path'] = 'filepath'
+    # Validate
     settings.validate(test_settings)
-    self.assertEqual(test_settings['path'], ['filepath'])
-    self.assertEqual(test_settings['path_defined'], True)
+    self.assertEqual(test_settings.get('path'), ['filepath'])
+
+  # Test that a defined path settings is not overwritten by set_defaults
+  def test_path_defined(self):
+    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings['path'] = ['filepath']
+    # Validate
+    settings.validate(test_settings)
+    self.assertEqual(test_settings.get('path'), ['filepath'])
+    # Default should not affect
+    settings.set_defaults(test_settings)
+    self.assertEqual(test_settings.get('path'), ['filepath'])
 
   # Test that validate() properly sets the default path value
   def test_cache_default(self):
     test_settings = copy.deepcopy(self.minimum_valid_settings)
+    # Validate
     settings.validate(test_settings)
-    self.assertEqual(test_settings['cache'], {'enabled': True})
-    self.assertEqual(test_settings['path_defined'], False)
+    self.assertEqual(test_settings.get('cache'), None)
+    # Default
+    settings.set_defaults(test_settings)
+    self.assertEqual(test_settings.get('cache'), {'enabled': True})
+
+  # Test that a defined cache settings is not overwritten by set_defaults
+  def test_cache_defined(self):
+    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings['cache'] = {'a': 'b'}
+    # Validate
+    settings.validate(test_settings)
+    self.assertEqual(test_settings.get('cache'), {'a': 'b'})
+    # Default
+    settings.set_defaults(test_settings)
+    self.assertEqual(test_settings.get('cache'), {'a': 'b', 'enabled': True})
 
   # Test that it requires the 'key' key
   def test_key_required(self):
@@ -130,15 +158,30 @@ class TestValidate(unittest.TestCase):
   # Test that validate() properly sets the default parallel value
   def test_parallel_default(self):
     test_settings = copy.deepcopy(self.minimum_valid_settings)
+    # Validate
     settings.validate(test_settings)
-    self.assertFalse(test_settings['parallel'])
+    self.assertEqual(test_settings.get('parallel'), None)
+    # Default
+    settings.set_defaults(test_settings)
+    self.assertEqual(test_settings.get('parallel'), False)
+
+  # Test that a defined parallel settings is not overwritten by set_defaults
+  def test_parallel_defined(self):
+    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings['parallel'] = True
+    # Validate
+    settings.validate(test_settings)
+    self.assertEqual(test_settings.get('parallel'), True)
+    # Default
+    settings.set_defaults(test_settings)
+    self.assertEqual(test_settings.get('parallel'), True)
 
   # Test that validate() properly sets parllel to True when 'true' is passed in as a string
   def test_parallel_true_string(self):
     test_settings = copy.deepcopy(self.minimum_valid_settings)
     test_settings['parallel'] = 'true'
     settings.validate(test_settings)
-    self.assertTrue(test_settings['parallel'])
+    self.assertTrue(test_settings.get('parallel'))
 
 if __name__ == '__main__':
     unittest.main()

@@ -70,6 +70,18 @@ def validate_file(file):
   return loaded
 
 
+# Set the default values for missing fields
+def set_defaults(settings):
+  # Default settings
+  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
+  if 'cache' not in settings: settings['cache'] = {}
+  settings['cache'].setdefault('enabled', True)
+  if 'parallel' not in settings: settings['parallel'] = False
+  if 'skipauth' not in settings: settings['skipauth'] = False
+
+  return settings
+
+
 # Validate settings and set defaults
 def validate(settings):
   """
@@ -78,16 +90,6 @@ def validate(settings):
   2. Have a key & secret & bucket defined
   3. Have skipauth set to true as well as a bucket defined
   """
-  # Default settings
-  settings['path_defined'] = True
-  if 'path' not in settings or settings['path'] is None: 
-    settings['path'] = ['']
-    settings['path_defined'] = False
-  if 'cache' not in settings: settings['cache'] = {}
-  settings['cache'].setdefault('enabled', True)
-  if 'parallel' not in settings: settings['parallel'] = False
-  if 'skipauth' not in settings: settings['skipauth'] = False
-
   # Check if There is a valid cache
   if ((settings.get('cache', {}).get('path', None) and os.path.isfile(settings['cache']['path'])) and
      # cache exists
@@ -111,9 +113,11 @@ def validate(settings):
       """)
 
   # Type conversions
-  if not isinstance(settings['path'], list):
+  if not isinstance(settings.get('path', []), list):
     settings['path'] = [settings['path']]
-  settings['parallel'] = util.truthy(settings['parallel'])
-  settings['skipauth'] = util.truthy(settings['skipauth'])
+  if not isinstance(settings.get('parallel', False), bool):
+    settings['parallel'] = util.truthy(settings['parallel'])
+  if not isinstance(settings.get('skipauth', False), bool):
+    settings['skipauth'] = util.truthy(settings['skipauth'])
 
   return settings
