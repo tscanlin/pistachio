@@ -130,6 +130,10 @@ Format of ``pistachio.yaml``/``.pistachio`` files
      # OPTIONAL
      # DEFAULT: True
      # When False, will disable cache
+     disabled: STRING/ARRAY
+     # OPTIONAL
+     # Takes in a path, or list of paths. Whenever pistachio loads any
+     # of those paths, cache will be disabled
 
 
 Example pistachio.yaml or .pistachio file
@@ -164,6 +168,8 @@ Example pistachio.yaml or .pistachio file with extra configurations
     cache: 
       path: ./pistachio.cache
       expires: 60  # minutes
+      disabled:
+        - prod
 
 Storing Credentials
 -------------------
