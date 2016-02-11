@@ -114,6 +114,8 @@ def validate(settings):
   # Type conversions
   if not isinstance(settings.get('path', []), list):
     settings['path'] = [settings['path']]
+  if not isinstance(settings.get('cache', {}).get('disabled', []), list):
+    settings['cache']['disabled'] = [settings['cache']['disabled']]
   if not isinstance(settings.get('parallel', False), bool):
     settings['parallel'] = util.truthy(settings['parallel'])
   if not isinstance(settings.get('skipauth', False), bool):
