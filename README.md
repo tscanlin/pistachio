@@ -106,7 +106,7 @@ cache: HASH
  # OPTIONAL
  # DEFAULT: True
  # When False, will disable cache
- disabled: STRING/ARRAY
+ disable: STRING/ARRAY
  # OPTIONAL
  # Takes in a path, or list of paths. Whenever pistachio loads any
  # of those paths, cache will be disabled
@@ -138,7 +138,7 @@ path:
 cache: 
   path: ./pistachio.cache
   expires: 60  # minutes
-  disabled:
+  disable:
     - prod
 ```
 

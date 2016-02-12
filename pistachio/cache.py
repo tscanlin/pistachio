@@ -35,7 +35,7 @@ def write(settings, config):
     return None
 
   cache = settings['cache']
-  cache_disabled = set(cache.get('disabled', [])) & set(settings.get('path', []))
+  cache_disabled = set(cache.get('disable', [])) & set(settings.get('path', []))
 
   if settings.get('path') and config.get('pistachio'):
     config['pistachio']['path'] = settings['path']

@@ -131,6 +131,14 @@ class TestValidate(unittest.TestCase):
     settings.set_defaults(test_settings)
     self.assertEqual(test_settings.get('cache'), {'a': 'b', 'enabled': True})
 
+  # Test that validate() converts cache disabled to an array
+  def test_cache_disabled_type_conversion(self):
+    test_settings = self.old_valid_settings
+    test_settings['cache'] = {'disable':'proddin'}
+    # Validate
+    settings.validate(test_settings)
+    self.assertEqual(test_settings.get('cache', {}).get('disable'), ['proddin'])
+  
   # Test that it does not require the 'key' key
   def test_no_key(self):
     test_settings = self.old_valid_settings
@@ -139,14 +147,6 @@ class TestValidate(unittest.TestCase):
       settings.validate(test_settings)
     except Exception as e:
       self.fail(e)
-
-  # Test that validate() converts cache disabled to an array
-  def test_cache_disabled_type_conversion(self):
-    test_settings = self.old_valid_settings
-    test_settings['cache'] = {'disabled':'proddin'}
-    # Validate
-    settings.validate(test_settings)
-    self.assertEqual(test_settings.get('cache', {}).get('disabled'), ['proddin'])
 
   # Test that it does not require the 'secret' key
   def test_no_secret(self):

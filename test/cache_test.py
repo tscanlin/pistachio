@@ -109,15 +109,15 @@ class TestWrite(unittest.TestCase):
 
   # Test that cache is not written when pistacho loads a path that is disabled in cache
   @mock.patch.object(builtins_module, 'open')
-  def test_cache_disabled(self, open_mock):
-    test_cache = {'cache': {'path': 'exists', 'enabled': True, 'disabled': ['prod']}, 'path': ['prod', 'dev']}
+  def test_cache_disable(self, open_mock):
+    test_cache = {'cache': {'path': 'exists', 'enabled': True, 'disable': ['prod']}, 'path': ['prod', 'dev']}
     cache.write(test_cache, self.test_config)
     self.assertFalse(open_mock.called)
 
   # Test that cache is ignored when no disabled
   @mock.patch.object(builtins_module, 'open')
-  def test_cache_not_disabled(self, open_mock):
-    test_cache = {'cache': {'path': 'exists', 'enabled': True, 'disabled': ['athena']}, 'path': ['prod', 'dev']}
+  def test_cache_not_disable(self, open_mock):
+    test_cache = {'cache': {'path': 'exists', 'enabled': True, 'disable': ['athena']}, 'path': ['prod', 'dev']}
     cache.write(test_cache, self.test_config)
     self.assertTrue(open_mock.called)
 
