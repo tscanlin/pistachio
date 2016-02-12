@@ -25,11 +25,7 @@ def load(s=SETTINGS):
 
   # Otherwise, download from s3, and save to cache
   session = s3.create_connection(s)
-<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
   loaded = s3.download(session, s)
-=======
-  loaded = s3.download(session, s['bucket'], s['path'], s['parallel'])
->>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
   cache.write(s, loaded)
 
   # Memoize
@@ -42,15 +38,15 @@ def attempt_reload(s=SETTINGS):
   # Validate the settings
   s = settings.validate(s)
 
+  # Set defaults before connecting to S3
+  s = settings.set_defaults(s)
+
   # Attempt to download from s3 and save to cache
   try:
     session = s3.create_connection(s)
-<<<<<<< 3de298f34d2d1d19eeed4adf5088968fbe5a790d
     loaded = s3.download(session, s)
-=======
-    loaded = s3.download(session, s['bucket'], s['path'], s['parallel'])
->>>>>>> Support boto3 and wipe out changes regarding my AWS credential fetching.
     cache.write(s, loaded)
+    
     # Memoize
     global memo
     memo = loaded
