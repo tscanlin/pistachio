@@ -27,16 +27,18 @@ def create_connection(settings):
   return session
 
 
-def download(session, bucket, path=[], parallel=False):
+def download(session, settings):
   """ Downloads the configs from S3, merges them, and returns a dict """
   # Use Amazon S3
   conn = session.resource('s3')
   # Specify bucket being accessed
-  Bucket = conn.Bucket(bucket)
+  Bucket = conn.Bucket(settings['bucket'])
 
   # Initialize the config with the pistachio keys
   config = {
     'pistachio': {
+      'key': settings.get('key'),
+      'secret': settings.get('secret'),
       'profile': session.profile_name,
       'bucket': Bucket.name,
     }
@@ -47,20 +49,20 @@ def download(session, bucket, path=[], parallel=False):
   global config_partials
   config_partials = {}
   # Must store partials by folder, so that we guarantee folder hierarchy when merging them
-  for folder in path:
+  for folder in settings['path']:
     config_partials[folder] = []
 
   # Create thread store if we're running in parallel
-  if parallel:
+  if settings['parallel']:
     threads = []
 
   # Iterate through the folders in the path
-  for folder in reversed(path):
+  for folder in reversed(settings['path']):
     # Iterate through yaml files in the set folder
     for key in Bucket.objects.filter(Prefix=folder + '/', Delimiter='/'):
       if key.key.endswith('.yaml'):
         # Download and store
-        if parallel:
+        if settings['parallel']:
           thread = threading.Thread(target=fetch_config_partial, args=(folder, key))
           thread.start()
           threads.append(thread)
@@ -68,12 +70,12 @@ def download(session, bucket, path=[], parallel=False):
           fetch_config_partial(folder, key)
 
   # Wait for the threads to finish if we're running in parallel
-  if parallel:
+  if settings['parallel']:
     for thread in threads:
       thread.join()
 
   # Merge them together
-  for folder in reversed(path):
+  for folder in reversed(settings['path']):
     for config_partial in config_partials[folder]:
       util.merge_dicts(config, config_partial)
 

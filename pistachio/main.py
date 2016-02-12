@@ -22,7 +22,7 @@ def load(s=SETTINGS):
 
   # Otherwise, download from s3, and save to cache
   session = s3.create_connection(s)
-  loaded = s3.download(session, s['bucket'], s['path'], s['parallel'])
+  loaded = s3.download(session, s)
   cache.write(s, loaded)
 
   # Memoize
@@ -38,7 +38,7 @@ def attempt_reload(s=SETTINGS):
   # Attempt to download from s3 and save to cache
   try:
     session = s3.create_connection(s)
-    loaded = s3.download(session, s['bucket'], s['path'], s['parallel'])
+    loaded = s3.download(session, s)
     cache.write(s, loaded)
     # Memoize
     global memo
