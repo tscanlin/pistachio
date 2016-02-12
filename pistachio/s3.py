@@ -10,13 +10,19 @@ config_partials = None
 
 def create_connection(settings):
   """ Creates an S3 connection using AWS credentials """
-  # Set up session with specified profile or 'default'
-  if not settings.get('profile'):
-    print('[Pistachio]: Did not specify AWS profile - Using default profile')
-    settings['profile'] = 'default'
+  # Temporary support for keys and secrets
+  if settings.get('key') and settings.get('secret'):
+    print('[Pistachio]: Using your .pistachio keys and secrets')
+    session = boto3.session.Session(aws_access_key_id=settings['key'],
+                                    aws_secret_access_key=settings['secret'])
+  else:
+    # Set up session with specified profile or 'default'
+    if not settings.get('profile'):
+      print('[Pistachio]: Did not specify AWS profile - Using default profile')
+      settings['profile'] = 'default'
 
-  session = boto3.session.Session(profile_name=settings['profile'])
-  print('[Pistachio]: Using {} profile'.format(session.profile_name))
+    session = boto3.session.Session(profile_name=settings['profile'])
+    print('[Pistachio]: Using {} profile'.format(session.profile_name))
 
   return session
 
@@ -26,13 +32,13 @@ def download(session, bucket, path=[], parallel=False):
   # Use Amazon S3
   conn = session.resource('s3')
   # Specify bucket being accessed
-  bucket = conn.Bucket(bucket)
+  Bucket = conn.Bucket(bucket)
 
   # Initialize the config with the pistachio keys
   config = {
     'pistachio': {
       'profile': session.profile_name,
-      'bucket': bucket.name,
+      'bucket': Bucket.name,
     }
   }
   # For each folder
@@ -51,7 +57,7 @@ def download(session, bucket, path=[], parallel=False):
   # Iterate through the folders in the path
   for folder in reversed(path):
     # Iterate through yaml files in the set folder
-    for key in bucket.objects.filter(Prefix=folder + '/', Delimiter='/'):
+    for key in Bucket.objects.filter(Prefix=folder + '/', Delimiter='/'):
       if key.key.endswith('.yaml'):
         # Download and store
         if parallel:

@@ -48,14 +48,14 @@ class TestCreateConnection(unittest.TestCase):
         self.fail(e)
       session.assert_called_with(profile_name='not default')
 
-  def test_using_deprecated_key_and_secret_uses_default_profile(self):
+  def test_using_deprecated_key_and_secret_uses_key_and_secret(self):
     test_settings = self.old_valid_settings
     with mock.patch('boto3.session.Session') as session:
       try:
         s3.create_connection(test_settings)
       except Exception as e:
         self.fail(e)
-      session.assert_called_with(profile_name='default')
+      session.assert_called_with(aws_access_key_id='exists', aws_secret_access_key='exists')
 
   def test_using_deprecated_key_only_uses_default_profile(self):
     test_settings = self.old_valid_settings

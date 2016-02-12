@@ -69,7 +69,9 @@ def validate_pistachio_file(file):
     mode = oct(stat.S_IMODE(os.stat(file).st_mode))
     if mode not in ['0o600', '0600']:
       raise Exception('Pistachio settings file "{0}" contains a key/secret. Mode must be set to "0600" or "0o600", not "{1}"'.format(file, mode))
-    print('[Pistachio]: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
+    if os.path.basename(file) != PISTACHIO_FILE_NAME:
+      raise Exception('"{0}" is not a "{1}" file. Only "{1}" files can contain key/secrets'.format(file, PISTACHIO_FILE_NAME))
+    # print('[Pistachio]: Found "key" and/or "secret" in {0}. This is deprecated - Using boto (aws) credentials instead'.format(file))
 
 
   return loaded
