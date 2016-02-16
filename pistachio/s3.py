@@ -47,31 +47,27 @@ def download(session, settings):
       'bucket': Bucket.name,
     }
   }
-  # For each folder
 
   # Reset the config_partials array
   global config_partials
   config_partials = {}
-  # Must store partials by folder, so that we guarantee folder hierarchy when merging them
-  for folder in settings['path']:
-    config_partials[folder] = []
+  # Must store partials by path, so that we guarantee path hierarchy when merging them
+  config_partials[settings['path']] = []
 
   # Create thread store if we're running in parallel
   if settings['parallel']:
     threads = []
 
-  # Iterate through the folders in the path
-  for folder in reversed(settings['path']):
-    # Iterate through yaml files in the set folder
-    for key in Bucket.objects.filter(Prefix=folder + '/', Delimiter='/'):
-      if key.key.endswith('.yaml'):
-        # Download and store
-        if settings['parallel']:
-          thread = threading.Thread(target=fetch_config_partial, args=(folder, key))
-          thread.start()
-          threads.append(thread)
-        else:
-          fetch_config_partial(folder, key)
+  # Iterate through yaml files in the set path
+  for key in Bucket.objects.filter(Prefix=settings['path'] + '/', delimiter='/'):
+    if key.key.endswith('.yaml'):
+      # Download and store
+      if settings['parallel']:
+        thread = threading.Thread(target=fetch_config_partial, args=(settings['path'], key))
+        thread.start()
+        threads.append(thread)
+      else:
+        fetch_config_partial(settings['path'], key)
 
   # Wait for the threads to finish if we're running in parallel
   if settings['parallel']:
@@ -80,14 +76,13 @@ def download(session, settings):
       thread.join(5)
 
   # Merge them together
-  for folder in reversed(settings['path']):
-    for config_partial in config_partials[folder]:
-      util.merge_dicts(config, config_partial)
+  for config_partial in config_partials[settings['path']]:
+    util.merge_dicts(config, config_partial)
 
   return config
 
 
-def fetch_config_partial(folder, key):
+def fetch_config_partial(path, key):
   """ Downloads contents of an S3 file given an S3 key object """
   try:
     pool.acquire()
@@ -95,7 +90,7 @@ def fetch_config_partial(folder, key):
 
     # Append the config_partials with the downloaded content
     global config_partials
-    config_partials[folder].append(yaml.load(contents))
+    config_partials[path].append(yaml.load(contents))
 
   except botocore.exceptions.ClientError as e:
     print("[Pistachio]: S3 exception on %s: %s" % (key, e))

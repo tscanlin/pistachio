@@ -44,10 +44,7 @@ def load():
 
   # Override settings from any PISTACHIO environment variables
   for var, val in os.environ.items():
-    if var == 'PISTACHIO_PATH':
-      # When pistachio path is set through environment variables, folders are ':' delimited
-      settings['path'] = val.split(':')
-    elif var.startswith('PISTACHIO_'):
+    if var.startswith('PISTACHIO_'):
       key = var.split('PISTACHIO_', 1)[1]
       settings[key.lower()] = val
 
@@ -78,7 +75,7 @@ def validate_pistachio_file(file):
 # Set the default values for missing fields
 def set_defaults(settings):
   # Default settings
-  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
+  if 'path' not in settings or settings['path'] is None: settings['path'] = ''
   if 'cache' not in settings: settings['cache'] = {}
   settings['cache'].setdefault('enabled', True)
   if 'parallel' not in settings: settings['parallel'] = False
@@ -111,9 +108,10 @@ def validate(settings):
   else:
     raise ValueError(validation_message)
 
+  if isinstance(settings.get('path'), list):
+    raise Exception('[Pistachio]: path no longer supports lists')
+
   # Type conversions
-  if not isinstance(settings.get('path', []), list):
-    settings['path'] = [settings['path']]
   if not isinstance(settings.get('parallel', False), bool):
     settings['parallel'] = util.truthy(settings['parallel'])
   if not isinstance(settings.get('skipauth', False), bool):
