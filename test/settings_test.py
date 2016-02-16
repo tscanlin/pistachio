@@ -102,7 +102,7 @@ class TestValidate(unittest.TestCase):
 
   # Test that a defined path settings is not overwritten by set_defaults
   def test_path_defined(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = self.old_valid_settings
     test_settings['path'] = ['filepath']
     # Validate
     settings.validate(test_settings)
@@ -123,7 +123,7 @@ class TestValidate(unittest.TestCase):
 
   # Test that a defined cache settings is not overwritten by set_defaults
   def test_cache_defined(self):
-    test_settings = copy.deepcopy(self.minimum_valid_settings)
+    test_settings = self.old_valid_settings
     test_settings['cache'] = {'a': 'b'}
     # Validate
     settings.validate(test_settings)
@@ -180,6 +180,7 @@ class TestValidate(unittest.TestCase):
   def test_parallel_defined(self):
     # Validate
     test_settings = self.old_valid_settings
+    test_settings['parallel'] = True
     settings.validate(test_settings)
     self.assertEqual(test_settings.get('parallel'), True)
     # Default
