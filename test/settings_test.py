@@ -89,26 +89,23 @@ class TestValidate(unittest.TestCase):
     self.assertEqual(test_settings.get('path'), None)
     # Default
     settings.set_defaults(test_settings)
-    self.assertEqual(test_settings.get('path'), [''])
+    self.assertEqual(test_settings.get('path'), '')
 
-  # Test that validate() converts the path to an array
-  def test_path_type_conversion(self):
+  # Test that validate() keeps the string path as is
+  def test_path_string(self):
     test_settings = self.old_valid_settings
     test_settings['path'] = 'filepath'
     # Validate
     settings.validate(test_settings)
-    self.assertEqual(test_settings.get('path'), ['filepath'])
+    self.assertEqual(test_settings.get('path'), 'filepath')
 
-  # Test that a defined path settings is not overwritten by set_defaults
+  # Test that a defined path settings as an array raises an exception
   def test_path_defined(self):
     test_settings = self.old_valid_settings
     test_settings['path'] = ['filepath']
     # Validate
-    settings.validate(test_settings)
-    self.assertEqual(test_settings.get('path'), ['filepath'])
-    # Default should not affect
-    settings.set_defaults(test_settings)
-    self.assertEqual(test_settings.get('path'), ['filepath'])
+    with self.assertRaises(Exception):
+      settings.validate(test_settings)
 
   # Test that validate() properly sets the default path value
   def test_cache_default(self):

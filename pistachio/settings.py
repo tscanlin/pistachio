@@ -108,7 +108,8 @@ def validate(settings):
   else:
     raise ValueError(validation_message)
 
-  if isinstance(settings.get('path'), list) or ':' in settings.get('path'):
+  settings_path_is_list = isinstance(settings.get('path'), list) or ':' in settings.get('path', [])
+  if settings_path_is_list:
     raise Exception('[Pistachio]: Pistachio no longer supports list types for path. Please pass in a string instead.')
 
   # Type conversions
