@@ -38,6 +38,9 @@ def attempt_reload(s=SETTINGS):
   # Validate the settings
   s = settings.validate(s)
 
+  # Set defaults before connecting to S3
+  s = settings.set_defaults(s)
+
   # Attempt to download from s3 and save to cache
   try:
     conn = s3.create_connection(s)

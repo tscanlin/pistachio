@@ -46,7 +46,7 @@ class TestMemoization(unittest.TestCase):
   # Test that memo is not loaded on a reload
   @mock.patch('pistachio.s3.download', mock.Mock(return_value = {'fraudulent': 'config', 'pistachio': {}}))
   def test_reload_ignores_memo(self):
-    print pistachio.main.attempt_reload(TEST_SETTINGS)
+    pistachio.main.attempt_reload(TEST_SETTINGS)
     self.assertNotEqual(pistachio.main.memo, TEST_CONFIG)
 
 
