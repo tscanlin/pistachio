@@ -51,3 +51,11 @@ def attempt_reload(s=SETTINGS):
     memo = loaded
   except:
     print('Pistachio failed to reload cache')
+
+def print_settings(s=SETTINGS):
+  # Validate the settings
+  s = settings.validate(s)
+  # Set defaults
+  s = settings.set_defaults(s)
+
+  print(s)
