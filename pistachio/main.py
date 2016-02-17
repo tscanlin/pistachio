@@ -10,6 +10,7 @@ def load(s=SETTINGS):
   # Use memoized if available
   global memo
   if memo:
+    print('[Pistachio]: Loading memoized credentials')
     return memo
 
   # Validate the settings
@@ -18,6 +19,7 @@ def load(s=SETTINGS):
   # Attempt to load from cache unless disabled
   loaded_cache = cache.load(s)
   if loaded_cache is not None:
+    print('[Pistachio]: Loading a pistachio cache')
     return loaded_cache
 
   # Set defaults before connecting to S3
