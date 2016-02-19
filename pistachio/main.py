@@ -23,9 +23,9 @@ def load(s=SETTINGS):
   # Set defaults before connecting to S3
   s = settings.set_defaults(s)
 
-  # Download from s3, and save to cache
-  conn = s3.create_connection(s)
-  loaded = s3.download(conn, s['bucket'], s['path'], s['parallel'])
+  # Otherwise, download from s3, and save to cache
+  session = s3.create_connection(s)
+  loaded = s3.download(session, s)
   cache.write(s, loaded)
 
   # Memoize
@@ -43,11 +43,12 @@ def attempt_reload(s=SETTINGS):
 
   # Attempt to download from s3 and save to cache
   try:
-    conn = s3.create_connection(s)
-    loaded = s3.download(conn, s['bucket'], s['path'], s['parallel'])
+    session = s3.create_connection(s)
+    loaded = s3.download(session, s)
     cache.write(s, loaded)
     # Memoize
     global memo
     memo = loaded
+    print('[Pistachio]: Successfully reloaded cache')
   except:
-    print('Pistachio failed to reload cache')
+    print('[Pistachio]: Failed to reload cache')
