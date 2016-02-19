@@ -1,5 +1,4 @@
 # Util Test Module
-import copy
 import mock
 import unittest
 

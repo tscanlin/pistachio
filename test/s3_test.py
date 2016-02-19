@@ -1,7 +1,6 @@
 # S3 Test Module
 import boto3
 import botocore
-import copy
 import mock
 import unittest
 

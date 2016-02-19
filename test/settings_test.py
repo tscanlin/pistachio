@@ -1,5 +1,4 @@
 # Settings Test Module
-import copy
 import mock
 import unittest
 
@@ -169,7 +168,7 @@ class TestValidate(unittest.TestCase):
 
   # Test that validate() properly sets the default parallel value
   def test_parallel_default(self):
-    test_settings = copy.deepcopy(self.old_valid_settings)
+    test_settings = self.old_valid_settings
     # Validate
     settings.validate(test_settings)
     self.assertEqual(test_settings.get('parallel'), None)
