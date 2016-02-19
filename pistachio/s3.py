@@ -17,7 +17,7 @@ def create_connection(settings):
   """ Creates an S3 connection using AWS credentials """
   # Temporary support for keys and secrets
   if settings.get('key') and settings.get('secret'):
-    print('[Pistachio]: Using your .pistachio keys and secrets')
+    print('[Pistachio]: Using your .pistachio keys and secrets. This will be deprecated soon.')
     session = boto3.session.Session(aws_access_key_id=settings['key'],
                                     aws_secret_access_key=settings['secret'])
   else:

@@ -135,6 +135,7 @@ class TestValidate(unittest.TestCase):
   # Test that it does not require the 'key' key
   def test_no_key(self):
     test_settings = self.old_valid_settings
+    del test_settings['key']
     try:
       settings.validate(test_settings)
     except Exception as e:

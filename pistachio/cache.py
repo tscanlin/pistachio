@@ -37,7 +37,7 @@ def write(settings, config):
     config['pistachio']['path'] = settings['path']
   if cache.get('path', None) and cache['enabled']:
     with open(cache['path'], 'w') as pistachio_cache:
-      pistachio_cache.write( yaml.safe_dump(config, default_flow_style=False))
+      pistachio_cache.write(yaml.safe_dump(config, default_flow_style=False))
     os.chmod(cache['path'], 0o600)
 
 # Check if cache is expired. 'expires' in minutes
