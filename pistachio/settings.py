@@ -6,37 +6,43 @@ from . import cache
 from . import util
 
 """ Special Variables """
-# Pistachio
-PISTACHIO_FILE_NAME='.pistachio'
-PISTACHIO_ALTERNATIVE_FILE_NAME='pistachio.yaml'
+PISTACHIO_FILE_NAME = '.pistachio'
+PISTACHIO_ALTERNATIVE_FILE_NAME = 'pistachio.yaml'
 
 def load():
   """
-  Configure pistachio settings
+  Configure pistachio settings.
+
+  Settings are retrieved by walking backwards from the cwd, to the $HOME dir.
+  Any file in that walk path named PISTACHIO_FILE_NAME or
+  PISTACHIO_ALTERNATIVE_FILE_NAME is parsed for settings.
   """
   settings = {}  # Settings
   pistachio_files = []  # Pistachio specific files
 
-  # Search bottom up from the current directory for settings files
+  # Search backwards from the current directory for settings files
   path = os.getcwd()
 
   while True:
-    # Check for PISTACHIO_ALTERNATIVE_FILE_NAME file
-    alternative_settings_file = os.path.join(path, PISTACHIO_ALTERNATIVE_FILE_NAME)
-    if os.path.isfile(alternative_settings_file): pistachio_files.append(alternative_settings_file)
-    # Check for PISTACHIO_FILE_NAME file
-    settings_file = os.path.join(path, PISTACHIO_FILE_NAME)
-    if os.path.isfile(settings_file): pistachio_files.append(settings_file)
+    # Check for PISTACHIO_ALTERNATIVE_FILE_NAME and PISTACHIO_FILE_NAME
+    for filename in (PISTACHIO_ALTERNATIVE_FILE_NAME, PISTACHIO_FILE_NAME):
+      file_path = os.path.join(path, filename)
+      if os.path.isfile(file_path):
+        pistachio_files.append(file_path)
 
     # Break out if we're at the root directory
-    if path == '/': break
+    if path == '/':
+      break
     # Otherwise, iterate up to the parent directory
     path = os.path.abspath(os.path.join(path, os.pardir))
 
   # Check for a PISTACHIO_FILE_NAME file in the HOME directory
   if os.getenv('HOME'):
-    pistachio_settings_path = os.path.abspath(os.path.join(os.getenv('HOME'), PISTACHIO_FILE_NAME))
-    if os.path.isfile(pistachio_settings_path): pistachio_files.append(pistachio_settings_path)
+    pistachio_settings_path = os.path.abspath(
+      os.path.join(os.getenv('HOME'), PISTACHIO_FILE_NAME)
+    )
+    if os.path.isfile(pistachio_settings_path):
+      pistachio_files.append(pistachio_settings_path)
 
   # Load settings from files
   for pistachio_file in reversed(pistachio_files):
@@ -55,10 +61,13 @@ def load():
 
 
 def validate_pistachio_file(file):
-  loaded = yaml.load(open(file,'r'))
+  with open(file, 'r') as _file:
+    contents = _file.read()
+  loaded = yaml.load(contents)
 
-  # Check if it's a proper yaml file
-  if not loaded: raise Exception('%s is not a proper yaml file.' % file)
+  if contents and loaded == contents:
+    # If it's still just a regular string, then it's not yaml
+    raise Exception('%s is not a proper yaml file.' % file)
 
   # Expand the fullpath of the cache, if set
   if 'cache' in loaded:
@@ -78,11 +87,18 @@ def validate_pistachio_file(file):
 # Set the default values for missing fields
 def set_defaults(settings):
   # Default settings
-  if 'path' not in settings or settings['path'] is None: settings['path'] = ['']
-  if 'cache' not in settings: settings['cache'] = {}
+  if 'path' not in settings or settings['path'] is None:
+    settings['path'] = ['']
+
+  if 'cache' not in settings:
+    settings['cache'] = {}
   settings['cache'].setdefault('enabled', True)
-  if 'parallel' not in settings: settings['parallel'] = False
-  if 'skipauth' not in settings: settings['skipauth'] = False
+
+  if 'parallel' not in settings:
+    settings['parallel'] = False
+
+  if 'skipauth' not in settings:
+    settings['skipauth'] = False
 
   return settings
 
