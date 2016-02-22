@@ -18,9 +18,9 @@ pool = threading.BoundedSemaphore(value=maxconn)
 
 def create_connection(settings):
   """ Creates an S3 connection using AWS credentials """
-  # Temporary support for keys and secrets
+  # Keys and secrets defined by environment variables
   if settings.get('key') and settings.get('secret'):
-    logger.debug('Using your .pistachio keys and secrets.')
+    logger.debug('Using your PISTACHIO_KEY and PISTACHIO_SECRET environment variables')
     session = boto3.session.Session(aws_access_key_id=settings['key'],
                                     aws_secret_access_key=settings['secret'])
   else:
@@ -46,7 +46,7 @@ def download(session, settings):
     'pistachio': {
       'key': settings.get('key'),
       'secret': settings.get('secret'),
-      'profile': session.profile_name,
+      'profile': settings.get('profile'),
       'bucket': Bucket.name,
     }
   }

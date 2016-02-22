@@ -75,11 +75,7 @@ def validate_pistachio_file(file):
 
   # Warn about open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
-    mode = oct(stat.S_IMODE(os.stat(file).st_mode))
-    if mode not in ['0o600', '0600']:
-      raise Exception('Pistachio settings file "{0}" contains a key/secret. Mode must be set to "0600" or "0o600", not "{1}"'.format(file, mode))
-    if os.path.basename(file) != PISTACHIO_FILE_NAME:
-      raise Exception('"{0}" is not a "{1}" file. Only "{1}" files can contain key/secrets'.format(file, PISTACHIO_FILE_NAME))
+    raise Exception('"{0}" contains key/secrets. Please move these to an AWS Profile.\nInstructions on AWS profiles here: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html'.format(file))
 
   return loaded
 
