@@ -114,7 +114,7 @@ class TestWrite(unittest.TestCase):
     cache.write(test_cache, self.test_config)
     self.assertFalse(open_mock.called)
 
-  # Test that cache is ignored when no disabled
+  # Test that cache is written when no disabled paths are included within settings
   @mock.patch.object(builtins_module, 'open')
   def test_cache_not_disable(self, open_mock):
     test_cache = {'cache': {'path': 'exists', 'enabled': True, 'disable': ['athena']}, 'path': ['prod', 'dev']}

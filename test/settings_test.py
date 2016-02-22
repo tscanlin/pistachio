@@ -137,7 +137,7 @@ class TestValidate(unittest.TestCase):
     test_settings['cache'] = {'disable':'proddin'}
     # Validate
     settings.validate(test_settings)
-    self.assertEqual(test_settings.get('cache', {}).get('disable'), ['proddin'])
+    self.assertEqual(test_settings['cache']['disable'], ['proddin'])
   
   # Test that it does not require the 'key' key
   def test_no_key(self):
