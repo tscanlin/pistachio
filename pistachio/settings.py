@@ -20,7 +20,7 @@ def load():
   settings = {}  # Settings
   pistachio_files = []  # Pistachio specific files
 
-  # Search backwards from the current directory for settings files
+  # Search bottom up from the current directory for settings files
   path = os.getcwd()
 
   while True:
@@ -65,7 +65,7 @@ def validate_pistachio_file(file):
     contents = _file.read()
   loaded = yaml.load(contents)
 
-  if contents and loaded == contents:
+  if not contents or loaded == contents:
     # If it's still just a regular string, then it's not yaml
     raise Exception('%s is not a proper yaml file.' % file)
 
