@@ -62,10 +62,10 @@ def load():
 
 def validate_pistachio_file(file):
   with open(file, 'r') as _file:
-    contents = _file.read()
+    contents = _file.read().strip()
   loaded = yaml.load(contents)
 
-  if not contents or loaded == contents:
+  if not contents or not loaded or loaded == contents:
     # If it's still just a regular string, then it's not yaml
     raise Exception('%s is not a proper yaml file.' % file)
 
