@@ -23,11 +23,11 @@ def create_connection(settings):
   else:
     # Set up session with specified profile or 'default'
     if not settings.get('profile'):
-      print('[Pistachio]: Did not specify AWS profile - Using default profile')
-      settings['profile'] = 'default'
-
-    session = boto3.session.Session(profile_name=settings['profile'])
-    print('[Pistachio]: Using {} profile'.format(session.profile_name))
+      session = boto3.session.Session()
+      print('[Pistachio]: Did not specify AWS profile. Defaulting to boto3 credentials.')
+    else:
+      session = boto3.session.Session(profile_name=settings['profile'])
+      print('[Pistachio]: Specified AWS profile. Using profile: {}'.format(session.profile_name))
   return session
 
 
