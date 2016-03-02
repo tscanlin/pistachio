@@ -1,6 +1,7 @@
 import sys
 import boto3
 import botocore
+import logging
 import threading
 import yaml
 
@@ -17,17 +18,17 @@ def create_connection(settings):
   """ Creates an S3 connection using AWS credentials """
   # Temporary support for keys and secrets
   if settings.get('key') and settings.get('secret'):
-    print('[Pistachio]: Using your .pistachio keys and secrets. This will be deprecated soon.')
+    logging.debug('[Pistachio] Using your .pistachio keys and secrets.')
     session = boto3.session.Session(aws_access_key_id=settings['key'],
                                     aws_secret_access_key=settings['secret'])
   else:
     # Set up session with specified profile or 'default'
     if not settings.get('profile'):
       session = boto3.session.Session()
-      print('[Pistachio]: Did not specify AWS profile. Defaulting to boto3 credentials.')
+      logging.debug('[Pistachio] Did not specify AWS profile. Defaulting to boto3 credentials.')
     else:
       session = boto3.session.Session(profile_name=settings['profile'])
-      print('[Pistachio]: Specified AWS profile. Using profile: {}'.format(session.profile_name))
+      logging.debug('[Pistachio] Specified AWS profile. Using profile: {}'.format(session.profile_name))
   return session
 
 
@@ -98,9 +99,9 @@ def fetch_config_partial(folder, key):
     config_partials[folder].append(yaml.load(contents))
 
   except botocore.exceptions.ClientError as e:
-    print("[Pistachio]: S3 exception on %s: %s" % (key, e))
+    logging.warning("[Pistachio] S3 exception on %s: %s" % (key, e))
   except:
-    print("[Pistachio]: Unexpected error: %s" % sys.exc_info()[0])
+    logging.warning("[Pistachio] Unexpected error: %s" % sys.exc_info()[0])
   finally:
     pool.release()
 

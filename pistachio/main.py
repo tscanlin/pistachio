@@ -1,3 +1,5 @@
+import logging
+
 from . import cache
 from . import s3
 from . import settings
@@ -49,6 +51,6 @@ def attempt_reload(s=SETTINGS):
     # Memoize
     global memo
     memo = loaded
-    print('[Pistachio]: Successfully reloaded cache')
+    logging.info('[Pistachio] Successfully reloaded cache')
   except:
-    print('[Pistachio]: Failed to reload cache')
+    logging.error('[Pistachio] Failed to reload cache')
