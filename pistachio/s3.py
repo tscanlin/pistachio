@@ -101,9 +101,9 @@ def fetch_config_partial(folder, key):
     config_partials[folder].append(yaml.load(contents))
 
   except botocore.exceptions.ClientError as e:
-    logger.warning("[Pistachio] S3 exception on %s: %s" % (key, e))
+    logger.warning("S3 exception on %s: %s" % (key, e))
   except:
-    logger.warning("[Pistachio] Unexpected error: %s" % sys.exc_info()[0])
+    logger.warning("Unexpected error: %s" % sys.exc_info()[0])
   finally:
     pool.release()
 
