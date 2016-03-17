@@ -6,7 +6,9 @@ S3 stored Credential loader module.
 Copyright Optimizely, Inc., All Rights Reserved.
 
 | The ``pistachio`` module exists to load credentials stored on S3.
-| This package works in conjunction with `boto3 <https://github.com/boto/boto3>` to seamlessly connect you to your Amazon S3 bucket.
+| This package works in conjunction with
+  `boto3 <https://github.com/boto/boto3>`__ to seamlessly connect you to
+  your Amazon S3 bucket.
 | This package understands nothing about how your S3 security is
   managed.
 | This package assumes it has access to the S3 bucket/folder(s) you set
@@ -15,11 +17,20 @@ Copyright Optimizely, Inc., All Rights Reserved.
 Quickstart
 ----------
 
+Prerequisite
+^^^^^^^^^^^^
+
+Set up an AWS profile inside ~/.aws/credentials. More instructions on
+how to do this are here:
+
+`Configuring the AWS Command Line
+Interface <http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files>`__
+
 Setup
 ^^^^^
 
-Put a ``pistachio.yaml`` or ``.pistachio`` file in your project repo with the following
-content:
+Put a ``pistachio.yaml`` or ``.pistachio`` file in your project repo
+with the following content:
 
 ::
 
@@ -34,6 +45,7 @@ Accessing the loaded config
 ::
 
     import pistachio
+
     config = pistachio.load()
     print config  # Print the results
 
@@ -43,17 +55,20 @@ Under the Hood
 ^^^^^^^^^^^^^^
 
 | When you run ``pistachio.load()`` it:
-| - Checks if you have a 'cache' setting - If so, attepmpts to load from
-  the cache file, if it exists - Otherwise, loads the config by merging
-  yaml files from specified bucket/folders - This can be slow, as it has
-  to download each file from S3 over the network - If 'cache' is set,
-  saves the cache - Saves the loaded config to ``pistachio.CONFIG``
+| - Checks if you have a 'cache' setting - If so, checks that ``path``
+  setting matches Pistachio's ``path`` value in the cache file, if it
+  exists - If so, attempts to load from the cache file, if it exists -
+  Otherwise, loads the config by merging yaml files from specified
+  bucket/folders - This can be slow, as it has to download each file
+  from S3 over the network - If 'cache' is set, saves the cache - Saves
+  the loaded config to ``pistachio.CONFIG``
 
 Settings
 --------
 
 | This is loaded from files named ``pistachio.yaml`` and ``.pistachio``.
-| Keys set in higher priority files receive precedence and override lower priority files.
+| Keys set in higher priority files receive precedence and override
+  lower priority files.
 
 Load priority from highest to lowest:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -61,10 +76,10 @@ Load priority from highest to lowest:
 1. Environment variables prefixed with ``PISTACHIO_``
 '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-``export PISTACHIO_<SOME KEY>=<SOME VALUE>`` would override any keys set in the
-``pistachio.yaml`` or ``.pistachio`` files
+``export PISTACHIO_<SOME KEY>=<SOME VALUE>`` would override any keys set
+in the ``pistachio.yaml`` or ``.pistachio`` files
 
-2. The ``pistachio.yaml`` or ``.pisatchio`` files starting from the current working directory, up to the root of the filesystem.
+2. The ``pistachio.yaml`` or ``.pistachio`` files starting from the current working directory, up to the root of the filesystem.
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 ::
@@ -135,11 +150,11 @@ Format of ``pistachio.yaml``/``.pistachio`` files
      # Takes in a path, or list of paths. Whenever pistachio loads any
      # of those paths, cache will be disabled
 
-
 Example pistachio.yaml or .pistachio file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
+
 
     # pistachio.yaml
     bucket: MyBucket

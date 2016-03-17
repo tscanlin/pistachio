@@ -9,7 +9,14 @@ This package works in conjunction with [boto3](https://github.com/boto/boto3) to
 This package understands nothing about how your S3 security is managed.  
 This package assumes it has access to the S3 bucket/folder(s) you set it to use.
 
+
 ## Quickstart
+
+#### Prerequisite
+Set up an AWS profile inside ~/.aws/credentials.
+More instructions on how to do this are here: 
+
+[Configuring the AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files)
 
 #### Setup
 Put a `pistachio.yaml` or `.pistachio` file in your project repo with the following content:
