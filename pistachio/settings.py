@@ -1,3 +1,4 @@
+import logging
 import os
 import stat
 import yaml
@@ -75,7 +76,9 @@ def validate_pistachio_file(file):
 
   # Warn about open pistachio keys or secrets
   if 'key' in loaded or 'secret' in loaded:
-    raise Exception('"{0}" contains key/secrets. Please move these to an AWS Profile.\nInstructions on AWS profiles here: http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html'.format(file))
+    print('"{0}" contains key/secret. Please remove key/secret. Using AWS credentials instead...'.format(file))
+    loaded.pop('key', None)
+    loaded.pop('secret', None)
 
   return loaded
 
@@ -92,9 +95,6 @@ def set_defaults(settings):
 
   if 'parallel' not in settings:
     settings['parallel'] = False
-
-  if 'skipauth' not in settings:
-    settings['skipauth'] = False
 
   return settings
 
@@ -130,7 +130,5 @@ def validate(settings):
     settings['cache']['disable'] = [settings['cache']['disable']]
   if not isinstance(settings.get('parallel', False), bool):
     settings['parallel'] = util.truthy(settings['parallel'])
-  if not isinstance(settings.get('skipauth', False), bool):
-    settings['skipauth'] = util.truthy(settings['skipauth'])
 
   return settings

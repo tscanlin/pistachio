@@ -13,7 +13,7 @@ This package assumes it has access to the S3 bucket/folder(s) you set it to use.
 ## Quickstart
 
 #### Prerequisite
-Set up an AWS profile inside `~/.aws/credentials`.
+Set up an AWS profile by running `aws configure` or writing to `~/.aws/credentials`.
 More instructions on how to do this are here: 
 
 [Configuring the AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files)

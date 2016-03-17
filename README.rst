@@ -20,8 +20,8 @@ Quickstart
 Prerequisite
 ^^^^^^^^^^^^
 
-Set up an AWS profile inside ``~/.aws/credentials``. More instructions
-on how to do this are here:
+Set up an AWS profile by running ``aws configure`` or writing to
+``~/.aws/credentials``. More instructions on how to do this are here:
 
 `Configuring the AWS Command Line
 Interface <http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files>`__
