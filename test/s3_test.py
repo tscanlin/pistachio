@@ -47,7 +47,7 @@ class TestCreateConnection(unittest.TestCase):
         self.fail(e)
       session.assert_called_with(profile_name='not default')
 
-  def test_using_deprecated_key_and_secret_uses_key_and_secret(self):
+  def test_using_key_and_secret(self):
     test_settings = self.old_valid_settings
     with mock.patch('boto3.session.Session') as session:
       try:

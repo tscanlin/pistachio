@@ -78,8 +78,9 @@ def validate_pistachio_file(file):
     mode = oct(stat.S_IMODE(os.stat(file).st_mode))
     if mode not in ['0o600', '0600']:
       raise Exception('Pistachio settings file "{0}" contains a key/secret. Mode must be set to "0600" or "0o600", not "{1}"'.format(file, mode))
-    if os.path.basename(file) != PISTACHIO_FILE_NAME:
-      raise Exception('"{0}" is not a "{1}" file. Only "{1}" files can contain key/secrets'.format(file, PISTACHIO_FILE_NAME))
+    print('"{0}" contains key/secret. Please remove key/secret. Using AWS credentials instead...'.format(file))
+    loaded.pop('key', None)
+    loaded.pop('secret', None)
 
   return loaded
 
@@ -96,9 +97,6 @@ def set_defaults(settings):
 
   if 'parallel' not in settings:
     settings['parallel'] = False
-
-  if 'skipauth' not in settings:
-    settings['skipauth'] = False
 
   return settings
 
@@ -134,7 +132,5 @@ def validate(settings):
     settings['cache']['disable'] = [settings['cache']['disable']]
   if not isinstance(settings.get('parallel', False), bool):
     settings['parallel'] = util.truthy(settings['parallel'])
-  if not isinstance(settings.get('skipauth', False), bool):
-    settings['skipauth'] = util.truthy(settings['skipauth'])
 
   return settings
