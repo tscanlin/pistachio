@@ -46,6 +46,6 @@ def write(settings, config):
 
 # Check if cache is expired. 'expires' in minutes
 def is_expired(cache):
-  if (os.path.isfile(cache['path']) && (time.time() - os.path.getmtime(cache['path']) > cache['expires']*60)):
+  if (os.path.isfile(cache['path']) and (time.time() - os.path.getmtime(cache['path']) > cache['expires']*60)):
     return True
   return False
