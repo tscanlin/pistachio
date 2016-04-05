@@ -93,7 +93,8 @@ def set_defaults(settings):
 
   if 'cache' not in settings:
     settings['cache'] = {}
-  settings['cache'].setdefault('enabled', True)
+  else:
+    settings['cache'].setdefault('enabled', True)
 
   if 'parallel' not in settings:
     settings['parallel'] = False
@@ -109,6 +110,8 @@ def validate(settings):
   2. Have a bucket defined
   """
 
+  settings = set_defaults(settings)
+
   # Cache is valid
   has_valid_cache = os.path.isfile(settings.get('cache', {}).get('path', ''))
   # Cache is enabled
@@ -117,12 +120,7 @@ def validate(settings):
   cache_has_expired = settings.get('cache', {}).get('expires')
   cache_expired = cache_has_expired and cache.is_expired(settings['cache'])
 
-  if has_valid_cache and cache_enabled and not cache_expired:
-    pass
-  # Check if bucket is defined
-  elif 'bucket' in settings:
-    pass
-  else:
+  if 'bucket' not in settings and not cache.load(settings):
     raise ValueError(validation_message)
 
   # Type conversions

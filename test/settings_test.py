@@ -43,6 +43,7 @@ class TestValidate(unittest.TestCase):
       self.fail("settings.validate raised an exception unexpectedly!")
 
   # Test that validate passes when the cache exists
+  @mock.patch('pistachio.cache.read', mock.Mock(return_value = {'pistachio': {'path': ''}}))
   @mock.patch('os.path.isfile', mock.Mock(return_value = True))
   def test_cache_exists(self):
     test_settings = {'cache': {'path': 'exists'}}
@@ -52,6 +53,7 @@ class TestValidate(unittest.TestCase):
       self.fail("settings.validate raised an exception unexpectedly!")
 
   # Test that validate passes when the cache exists and expires is valid
+  @mock.patch('pistachio.cache.read', mock.Mock(return_value = {'pistachio': {'path': ''}}))
   @mock.patch('os.path.isfile', mock.Mock(return_value = True))
   def test_cache_not_expired(self):
     test_settings = {'cache': {'path': 'exists', 'expires': 3}}
@@ -86,9 +88,6 @@ class TestValidate(unittest.TestCase):
     # Validate
     test_settings = self.old_valid_settings
     settings.validate(test_settings)
-    self.assertEqual(test_settings.get('path'), None)
-    # Default
-    settings.set_defaults(test_settings)
     self.assertEqual(test_settings.get('path'), [''])
 
   # Test that validate() converts the path to an array
@@ -110,15 +109,12 @@ class TestValidate(unittest.TestCase):
     settings.set_defaults(test_settings)
     self.assertEqual(test_settings.get('path'), ['filepath'])
 
-  # Test that validate() properly sets the default path value
+  # Test that validate() properly sets the default cache value
   def test_cache_default(self):
     # Validate
     test_settings = self.old_valid_settings
     settings.validate(test_settings)
-    self.assertEqual(test_settings.get('cache'), None)
-    # Default
-    settings.set_defaults(test_settings)
-    self.assertEqual(test_settings.get('cache'), {'enabled': True})
+    self.assertEqual(test_settings.get('cache'), {})
 
   # Test that a defined cache settings is not overwritten by set_defaults
   def test_cache_defined(self):
@@ -126,9 +122,6 @@ class TestValidate(unittest.TestCase):
     test_settings['cache'] = {'a': 'b'}
     # Validate
     settings.validate(test_settings)
-    self.assertEqual(test_settings.get('cache'), {'a': 'b'})
-    # Default
-    settings.set_defaults(test_settings)
     self.assertEqual(test_settings.get('cache'), {'a': 'b', 'enabled': True})
 
   # Test that validate() converts cache disabled to an array
@@ -179,9 +172,6 @@ class TestValidate(unittest.TestCase):
     test_settings = self.old_valid_settings
     # Validate
     settings.validate(test_settings)
-    self.assertEqual(test_settings.get('parallel'), None)
-    # Default
-    settings.set_defaults(test_settings)
     self.assertEqual(test_settings.get('parallel'), False)
 
   # Test that a defined parallel settings is not overwritten by set_defaults
@@ -190,9 +180,6 @@ class TestValidate(unittest.TestCase):
     test_settings = self.old_valid_settings
     test_settings['parallel'] = True
     settings.validate(test_settings)
-    self.assertEqual(test_settings.get('parallel'), True)
-    # Default
-    settings.set_defaults(test_settings)
     self.assertEqual(test_settings.get('parallel'), True)
 
   # Test that validate() properly sets parllel to True when 'true' is passed in as a string
