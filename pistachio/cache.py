@@ -35,6 +35,7 @@ def write(settings, config):
 
 
 def read(cache):
+  global opened_cache
   if not opened_cache:
     opened_cache = yaml.load(open(cache['path'], 'r'))
   return opened_cache
