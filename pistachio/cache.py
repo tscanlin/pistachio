@@ -2,6 +2,8 @@ import os
 import time
 import yaml
 
+opened_cache = None
+
 
 def load(settings):
   """Attempt to load cache from cache_path"""
@@ -10,7 +12,7 @@ def load(settings):
 
   # Load the file from a cache if one exists and not expired
   if is_valid(settings):
-    return loaded
+    return read(settings['cache'])
 
   # Otherwise return None
   return None
@@ -33,13 +35,15 @@ def write(settings, config):
 
 
 def read(cache):
-  return yaml.load(open(cache['path'], 'r'))
+  if not opened_cache:
+    opened_cache = yaml.load(open(cache['path'], 'r'))
+  return opened_cache
 
 
 def is_valid(settings):
   """Check if cache exists and is valid"""
   cache = settings['cache']
-  if exists(cache) and is_enabled(cache) and not is_expired(cache)
+  if exists(cache) and is_enabled(cache) and not is_expired(cache):
     loaded = read(cache)
 
     # Check if cache matches the path we want to load from

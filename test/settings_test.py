@@ -43,8 +43,8 @@ class TestValidate(unittest.TestCase):
       self.fail("settings.validate raised an exception unexpectedly!")
 
   # Test that validate passes when the cache exists
-  @mock.patch('pistachio.cache.read', mock.Mock(return_value = {'pistachio': {'path': ''}}))
-  @mock.patch('os.path.isfile', mock.Mock(return_value = True))
+  @mock.patch('pistachio.cache.read', mock.Mock(return_value = {'pistachio': {'path': ['']}}))
+  @mock.patch('pistachio.cache.exists', mock.Mock(return_value = True))
   def test_cache_exists(self):
     test_settings = {'cache': {'path': 'exists'}}
     try:
@@ -53,7 +53,7 @@ class TestValidate(unittest.TestCase):
       self.fail("settings.validate raised an exception unexpectedly!")
 
   # Test that validate passes when the cache exists and expires is valid
-  @mock.patch('pistachio.cache.read', mock.Mock(return_value = {'pistachio': {'path': ''}}))
+  @mock.patch('pistachio.cache.read', mock.Mock(return_value = {'pistachio': {'path': ['']}}))
   @mock.patch('os.path.isfile', mock.Mock(return_value = True))
   def test_cache_not_expired(self):
     test_settings = {'cache': {'path': 'exists', 'expires': 3}}

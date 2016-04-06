@@ -111,8 +111,7 @@ def validate(settings):
   """
 
   settings = set_defaults(settings)
-
-  if 'bucket' not in settings and cache.is_valid(settings):
+  if 'bucket' not in settings and not (settings['cache'] and cache.is_valid(settings)):
     raise ValueError(validation_message)
 
   # Type conversions
