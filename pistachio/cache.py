@@ -2,35 +2,24 @@ import os
 import time
 import yaml
 
+opened_cache = None
 
-# Attempt to load cache from cache_path
+
 def load(settings):
-  if not settings.get('cache'):
+  """Attempt to load cache from cache_path"""
+  if not settings['cache']:
     return None
 
-  cache = settings['cache']
-
   # Load the file from a cache if one exists and not expired
-  if ((cache.get('path', None) and os.path.isfile(cache['path'])) and
-     cache.get('enabled', True) and
-     ('expires' not in cache or not is_expired(cache))):
-    loaded = yaml.load(open(cache['path'], 'r'))
-
-    settings_path = settings.get('path')
-    cache_path = loaded.get('pistachio',{}).get('path')
-
-    # Check if cache is invalid
-    if settings_path and cache_path and settings_path != cache_path:
-      return None
-
-    return loaded
+  if is_valid(settings):
+    return read(settings['cache'])
 
   # Otherwise return None
   return None
 
 
-# Write cache to cache_path
 def write(settings, config):
+  """Write cache to cache_path"""
   if not settings.get('cache'):
     return None
 
@@ -44,8 +33,36 @@ def write(settings, config):
       pistachio_cache.write(yaml.safe_dump(config, default_flow_style=False))
     os.chmod(cache['path'], 0o600)
 
-# Check if cache is expired. 'expires' in minutes
+
+def read(cache):
+  if not opened_cache:
+    opened_cache = yaml.load(open(cache['path'], 'r'))
+  return opened_cache
+
+
+def is_valid(settings):
+  """Check if cache exists and is valid"""
+  cache = settings['cache']
+  if exists(cache) and is_enabled(cache) and not is_expired(cache):
+    loaded = read(cache)
+
+    # Check if cache matches the path we want to load from
+    if settings['path'] == loaded.get('pistachio',{}).get('path', None):
+      return True
+
+  return False
+
+
+def exists(cache):
+  return os.path.isfile(cache['path'])
+
+
+def is_enabled(cache):
+  return cache['enabled']
+
+
 def is_expired(cache):
-  if (os.path.isfile(cache['path']) and (time.time() - os.path.getmtime(cache['path']) > cache['expires']*60)):
+  """Check if cache is expired. 'expires' in minutes"""
+  if 'expires' in cache and time.time() - os.path.getmtime(cache['path']) > cache['expires']*60:
     return True
   return False
