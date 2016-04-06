@@ -112,15 +112,7 @@ def validate(settings):
 
   settings = set_defaults(settings)
 
-  # Cache is valid
-  has_valid_cache = os.path.isfile(settings.get('cache', {}).get('path', ''))
-  # Cache is enabled
-  cache_enabled = settings.get('cache', {}).get('enabled', True)
-  # Cache is expired
-  cache_has_expired = settings.get('cache', {}).get('expires')
-  cache_expired = cache_has_expired and cache.is_expired(settings['cache'])
-
-  if 'bucket' not in settings and not cache.load(settings):
+  if 'bucket' not in settings and cache.is_valid(settings):
     raise ValueError(validation_message)
 
   # Type conversions
