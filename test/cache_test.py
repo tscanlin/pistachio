@@ -78,6 +78,30 @@ class TestLoad(unittest.TestCase):
     self.assertEqual(cache.load(test_settings), None)
 
 
+class TestRead(unittest.TestCase):
+
+  TEST_CACHE_FILE = "'test': 'cache'\n"
+
+  def setUp(self):
+    self.test_cache_settings = {
+      'path': 'fakepath'
+    }
+    self.test_cache_dict = {'test': 'cache'}
+
+  def tearDown(self):
+    pass
+
+  @mock.patch.object(builtins_module, 'open', return_value=TEST_CACHE_FILE)
+  def test_properly_loads_cache(self, open_mock):
+    self.assertDictEqual(cache.read(self.test_cache_settings), self.test_cache_dict)
+
+  @mock.patch.object(builtins_module, 'open', return_value=TEST_CACHE_FILE)
+  def test_memoization(self, open_mock):
+    for _ in range(2):
+      cache.read(self.test_cache_settings)
+    open_mock.assert_called_once_with(self.test_cache_settings['path'], 'r')
+
+
 # Tests the cache.load
 class TestWrite(unittest.TestCase):
 
