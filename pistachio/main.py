@@ -49,3 +49,4 @@ def attempt_reload(s=SETTINGS):
     logger.info('Successfully reloaded cache')
   except:
     logger.error('Failed to reload cache')
+    raise
