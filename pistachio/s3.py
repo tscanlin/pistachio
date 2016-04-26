@@ -87,6 +87,9 @@ def download(session, settings):
     for config_partial in config_partials[folder]:
       util.merge_dicts(config, config_partial)
 
+  if not config:
+    raise Exception("No credentials were downloaded")
+
   return config
 
 
