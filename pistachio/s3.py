@@ -101,9 +101,15 @@ def fetch_config_partial(folder, key):
     config_partials[folder].append(yaml.load(contents))
 
   except botocore.exceptions.ClientError as e:
-    logger.warning("S3 exception on %s: %s" % (key, e))
+    error_code = e.get("Error", {}).get("Code")
+    if error_code == "ExpiredToken":
+      logger.error("Your AWS credentials are expired. Please fetch a new set of credentials.")
+      raise
+    else:
+      logger.warning("S3 exception on %s: %s" % (key, e))
   except:
-    logger.warning("Unexpected error: %s" % sys.exc_info()[0])
+    logger.error("Unexpected error: %s" % sys.exc_info()[0])
+    raise
   finally:
     pool.release()
 
