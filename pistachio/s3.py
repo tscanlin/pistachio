@@ -41,20 +41,19 @@ def download(session, settings):
   # Specify bucket being accessed
   Bucket = conn.Bucket(settings['bucket'])
 
-  # Initialize the config with the pistachio keys
-  config = {
-    'pistachio': {
-      'key': settings.get('key'),
-      'secret': settings.get('secret'),
-      'profile': settings.get('profile'),
-      'bucket': Bucket.name,
-    }
-  }
-  # For each folder
+  # Initialize the config and pistachio config
+  config = {}
+  pistachio_config = {'pistachio': {
+    'key': settings.get('key'),
+    'secret': settings.get('secret'),
+    'profile': settings.get('profile'),
+    'bucket': Bucket.name,
+  }}
 
   # Reset the config_partials array
   global config_partials
   config_partials = {}
+  # For each folder
   # Must store partials by folder, so that we guarantee folder hierarchy when merging them
   for folder in settings['path']:
     config_partials[folder] = []
@@ -90,6 +89,7 @@ def download(session, settings):
   if not config:
     raise Exception("No credentials were downloaded")
 
+  config.update(pistachio_config)
   return config
 
 
