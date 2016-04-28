@@ -1,3 +1,4 @@
+import hashlib
 import sys
 import boto3
 import botocore
@@ -15,6 +16,31 @@ config_partials = None
 # rate limit
 maxconn = 100
 pool = threading.BoundedSemaphore(value=maxconn)
+
+
+class Checksum:
+  def __init__(self):
+    self.SHA256 = ''
+    self.collection = []
+
+  def _generate_sha256(self):
+    # Order the collection of SHA256
+    sorted_contents = str(sorted(self.collection))
+    # Hash the collection
+    aggregate_SHA256 = hashlib.sha256(sorted_contents).hexdigest()
+    self.SHA256 = aggregate_SHA256
+
+  def aggregate_sha256(self, contents):
+    # Hash the contents
+    SHA256 = hashlib.sha256(contents).hexdigest()
+    # Append to collection
+    self.collection.append(SHA256)
+
+  def output(self):
+    # Update the instance's SHA256
+    self._generate_sha256()
+    print("Loaded pistachio contents: {}".format(self.SHA256))
+
 
 def create_connection(settings):
   """ Creates an S3 connection using AWS credentials """
@@ -36,6 +62,8 @@ def create_connection(settings):
 
 def download(session, settings):
   """ Downloads the configs from S3, merges them, and returns a dict """
+  checksum = Checksum()
+
   # Use Amazon S3
   conn = session.resource('s3')
   # Specify bucket being accessed
@@ -70,11 +98,11 @@ def download(session, settings):
       if key.key.endswith('.yaml'):
         # Download and store
         if settings['parallel']:
-          thread = threading.Thread(target=fetch_config_partial, args=(folder, key))
+          thread = threading.Thread(target=fetch_config_partial, args=(folder, key, checksum))
           thread.start()
           threads.append(thread)
         else:
-          fetch_config_partial(folder, key)
+          fetch_config_partial(folder, key, checksum)
 
   # Wait for the threads to finish if we're running in parallel
   if settings['parallel']:
@@ -87,10 +115,12 @@ def download(session, settings):
     for config_partial in config_partials[folder]:
       util.merge_dicts(config, config_partial)
 
+  # SHA256 hash of config to screen
+  checksum.output()
   return config
 
 
-def fetch_config_partial(folder, key):
+def fetch_config_partial(folder, key, checksum):
   """ Downloads contents of an S3 file given an S3 key object """
   try:
     pool.acquire()
@@ -100,6 +130,8 @@ def fetch_config_partial(folder, key):
     global config_partials
     config_partials[folder].append(yaml.load(contents))
 
+    # Collect SHA256 of contents
+    checksum.aggregate_sha256(contents)
   except botocore.exceptions.ClientError as e:
     logger.warning("S3 exception on %s: %s" % (key, e))
   except:
