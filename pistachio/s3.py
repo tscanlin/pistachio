@@ -78,7 +78,7 @@ def download(session, settings):
   # Wait for the threads to finish if we're running in parallel
   if settings['parallel']:
     for thread in threads:
-      # timeout in 5 seconds
+      # Timeout in 5 seconds
       thread.join(5)
 
   # Merge them together
@@ -87,7 +87,7 @@ def download(session, settings):
       util.merge_dicts(config, config_partial)
 
   if not config:
-    raise Exception("No credentials were downloaded")
+    raise Exception('No credentials were downloaded')
 
   config.update(pistachio_config)
   return config
@@ -104,9 +104,9 @@ def fetch_config_partial(folder, key):
     config_partials[folder].append(yaml.load(contents))
 
   except botocore.exceptions.ClientError as e:
-    error_code = e.get("Error", {}).get("Code")
-    if error_code == "ExpiredToken":
-      logger.error("Your AWS credentials are expired. Please fetch a new set of credentials.")
+    error_code = e.response.get('Error', {}).get('Code', 'Unknown')
+    if error_code == 'ExpiredToken':
+      logger.error('Your AWS credentials are expired. Please fetch a new set of credentials.')
       raise
     else:
       logger.warning("S3 exception on %s: %s" % (key, e))
